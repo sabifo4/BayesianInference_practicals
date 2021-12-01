@@ -121,7 +121,9 @@ should see the following screen:
 </p>
 
 Now, we will run a live demonstration of how you can use the commands. 
-Then, we will let `MrBayes` with the example data so you have time to go through the exercises!
+Then, we will run `MrBayes` with the example data. We will leave this analysis run in 
+the background and you will start working on the exercise we describe below. Then, we will 
+learn how to use `Tracer` and `FigTree` to analyse and visualise the results you have obtained!
 
 ## Exercise
 You will split into different groups so you can come up with 2 different models under which you
