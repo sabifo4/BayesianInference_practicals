@@ -47,7 +47,7 @@ text file in your preferred text editor as we will create this nexus file togeth
 a summary of the commands that we will go through:   
 
 **BLOCK 1: Start `MrBayes` and read input data**:   
-   * `being mrbayes`: this command initiates the block with instructions to run `MrBayes`.   
+   * `begin mrbayes`: this command initiates the block with instructions to run `MrBayes`.   
    * `log`: this command outputs to a file the screen messages. You can specify the file name (`filename`) and 
    if you want append or replace the file (`append/replace`). You start or stop this command by including the
    option `start` or `stop`, respectively. More details [here](http://mrbayes.sourceforge.net/Help/log.html).   
