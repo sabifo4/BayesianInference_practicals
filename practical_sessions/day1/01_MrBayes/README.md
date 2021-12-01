@@ -6,10 +6,11 @@ follow the instructions on their [GitHub repository](https://github.com/NBISwede
 
 We will be diving this practical session into the following sections:   
 
-   * Getting familiar with the commands in MrBayes   
-   * Running MrBayes   
-   * EXERCISES: Evaluating the effect that using different models can have on posterior parameter estimates   
-   * Learning how to use Tracer for MCMC diagnostics   
+   * Getting familiar with the commands in `MrBayes`.   
+   * Running `MrBayes`.   
+   * EXERCISES: Evaluating the effect that using different models can have on posterior parameter estimates.   
+   * Learning how to use `Tracer` for MCMC diagnostics.   
+   * Learning how to use `FigTree` to visualise inferred phylogenies.   
    
 Let's get started! 
 
@@ -188,14 +189,14 @@ we will focus on the effective sample sizes (ESSs) calculated
 for each of the model parameters, the frequency plot of the samples, and the trace plots. 
 
 
->> **QUESTIONS**:   
->>  - Do you think we need to run the chain longer?   
->>  - Is the ESS enough for the model parameters?   
->>  - How efficient is the chain?   
->>  - Do we need to specify a specific value for the burn-in phase?   
->>  - Which is the mean root age for this timetree?   
->>  - If another MCMC analysis has finished for another model you have run, compare 
->>    the results you have obtained and discuss with your group.
+> **QUESTIONS**:   
+>  - Do you think we need to run the chain longer?   
+>  - Is the ESS enough for the model parameters?   
+>  - How efficient is the chain?   
+>  - Do we need to specify a specific value for the burn-in phase?   
+>  - Which is the mean root age for this timetree?   
+>  - If another MCMC analysis has finished for another model you have run, compare 
+>    the results you have obtained and discuss with your group.
 
 
 # 5. Viewing the annotated tree
