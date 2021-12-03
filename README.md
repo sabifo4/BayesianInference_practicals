@@ -11,10 +11,10 @@ for the practical sessions. The content that we will cover is the following:
    will be using `MrBayes` to infer a phylogeny based on a Bayesian 
    approach. We will explore the effect that choosing different priors, data partitioning, or
    different nucleotide substitution models (among others) can have on phylogeny inference.   
-   * **Day 2.a - Divergence times estimation (I)**: we
+   * [Day 2.a - Divergence times estimation (I)](practical_sessions/day2/00_BEAST): we
    will be using `BEAST` to infer the divergence times of a phylogeny inferred with virus
    sequences that were isolated at different points in time.   
-   * **Day 2.b - Divergence times estimation (II)**: we
+   * [Day 2.b - Divergence times estimation (II)](practical_sessions/day2/01_MCMCtree): we
    will be using `MCMCtree` to infer the divergence times of a mammal phylogeny. We will see how we can
    use the approximate likelihood calculation to speed up this inference step with large genomic data 
    sets.

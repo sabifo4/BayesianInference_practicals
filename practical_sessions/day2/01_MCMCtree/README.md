@@ -50,7 +50,7 @@ the first dataset described in this section).
 </p>
 -->
 
-![im0](figs_MCMCtree/fig1.png)
+![im0](../../../figs/figs_MCMCtree/fig1.png)
 >> **Figure 1**. Densitree of the 10 mammals species that you will analyse in this tutorial.
 >> The script [`analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
 >> has been used to generate this figure.
@@ -67,7 +67,7 @@ following topology:
 </p>
 -->
 
-![im0](figs_MCMCtree/fig2.png)
+![im0](../../../figs/figs_MCMCtree/fig2.png)
 >> **Figure 2**. Tree of 10 species used in this tutorial. The nodes that have been calibrated 
 >> using the information from the fossil record (see Table 1 below) are indicitaed with 
 >> black dots. *_Note_*: This is Figure 1 in 
@@ -614,7 +614,7 @@ hopefully is the posterior distribution we wanted to approximate!).
 </p>
 -->
 
-![im0](figs_MCMCtree/fig3a.png)
+![im0](../../../figs/figs_MCMCtree/fig3a.png)
 >> **Figure 3**. Convergence plot for the chains ran in the previous step.
 >> The script [`analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
 >> has been used to generate this figure.
@@ -670,7 +670,7 @@ We can check the trace plots for those parameters with low/high ESS:
 </p>
 -->
 
-![im0](figs_MCMCtree/fig3b.png)
+![im0](../../../figs/figs_MCMCtree/fig3b.png)
 >> **Figure 4**. Trace plots for the estimated mean divergence times for nodes 11 and 19 for chain 1.
 >> The script [`analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
 >> has been used to generate this figure.
@@ -688,7 +688,7 @@ a longer burn-in period.
 </p>
 -->
 
-![im0](figs_MCMCtree/fig3c.png)
+![im0](../../../figs/figs_MCMCtree/fig3c.png)
 >> **Figure 5**. Histograms of chain 1 and 2 for values sampled to estimate the mean posterior time estimate for node 11.
 >> The script [`analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
 >> has been used to generate this figure.
@@ -729,7 +729,7 @@ the analysis and run a second chain to check for convergence.
 </p>
 -->
 
-![im0](figs_MCMCtree/fig5.png)
+![im0](../../../figs/figs_MCMCtree/fig5.png)
 >> **Figure 6**. Prior densities of node ages obtained by MCMC sampling (grey) VS the posterior densities (black).
 >> The script [`analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
 >> has been used to generate this figure.
