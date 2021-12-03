@@ -4,8 +4,6 @@
 > "Bayesian molecular clock dating using genome-scale datasets"
 > ([dos Reis and Yang, 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9074-0_10)), which 
 > code and dataset can also be found [here](https://github.com/mariodosreis/divtime).
-> Then, uncompress this file in your preferred location - remember where you have saved 
-> the uncompress directory as it contains the datasets we will be using.
 
 ## 1. Introduction 
 
@@ -16,8 +14,8 @@ programs that are part of the PAML package for phylogenetic analysis
 You can run this tutorial on the cluster as the latest version of PAML has 
 already been installed. Nevertheless, if you want to run it on
 your PC, please make sure that you have properly installed PAML and 
-exported the path to `MCMCtree` and `BASEML` executable files so you can 
-run these software from any location of your PC. You can download the latest 
+exported the path to the `MCMCtree` and `BASEML` executable files so you can 
+run these software from any location on your PC. You can download the latest 
 version of PAML [here](http://abacus.gene.ucl.ac.uk/software/paml.html#download).
 
 ### Downloading the data 
@@ -42,7 +40,7 @@ If time allows, you will also analyse a dataset of 330 mammal species (276 prima
 4 outgroups) with a shorter alignment. In this case, you will be able to see what 
 happens when there are a lot of taxa but the alignment is shorter (i.e., if the 
 alignment was a matrix, here you will have more rows than columns if compared to 
-the first dataset described in this section).
+the first dataset described before).
 
 <!--
 <p align="center">
@@ -69,7 +67,7 @@ following topology:
 
 ![im0](../../../figs/figs_MCMCtree/fig2.png)
 >> **Figure 2**. Tree of 10 species used in this tutorial. The nodes that have been calibrated 
->> using the information from the fossil record (see Table 1 below) are indicitaed with 
+>> using the information from the fossil record (see Table 1 below) are indicated with 
 >> black dots. *_Note_*: This is Figure 1 in 
 >> [dos Reis and Yang, 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9074-0_10).
 
@@ -94,27 +92,28 @@ Note that the notation used to define the calibrations in `MCMCtree` has the fol
 
    * **B(a, b, p<sub>L</sub>, p<sub>U</sub>)**: this notations means that the calibration used is a 
    **uniform distribution** which minimum value is _a_ and its maximum value is _b_.
-   Value p<sub>L</sub> and p<sub>U</sub> indicate that the true node ages has probabilities
+   Values p<sub>L</sub> and p<sub>U</sub> indicate that the true node age has probabilities
    p<sub>L</sub> and  p<sub>U</sub> of being outside the calibration bounds, that is, outside the
    range between _a_ and _b_.   
    * **ST(location, scale, shape, df)**: this means that the calibration is a **skew-_t_ distribution**, which 
-   parameters are location (χ), scale (ω), shape/slant (α), and degrees of freedom (ν).   
+   parameters are location (χ), scale (ω), shape or slant (α), and degrees of freedom (ν).   
    * **S2N(p, location1, scale1, shape1, location2, scale2, shape2)**: this means that the calibration is 
    _p_: 1 - _p_ **mixture of two skew-normal distributions**.   
    * **G(α, β)**: this means that the calibration is a **gamma distribution** with shape α and rate β.   
 
-The time unit is 100 million years. For instance, for calibration `B(0.075,0.10)`, this means 
-that 0.075 is equivant to 7.5 and 0.10 to 10 million years. Therefore, as this is format defines 
-a uniform distribution, if the time unit is 100 million years, this calibration would be translated 
+The time unit is 100 million years. For instance, for calibration `B(0.075,0.10)`, we would say 
+that 0.075 is equivant to 7.5 and 0.10 to 10 million years. As this format defines 
+a uniform distribution, if the time unit is 100 million years, then this calibration can be translated 
 as **"this age of this node is constrained to be between 7.5 and 10 million years ago"**. 
   
-More details about the format of these distributions on the PAML tutorial in the `MCMCtree` section. 
 Note that these calibrations were those used in
 [dos Reis et al. 2018](https://academic.oup.com/sysbio/article/67/4/594/4802240).
 
+>> **NOTE**: More details about the format of these distributions on the PAML tutorial in the `MCMCtree` section. 
+
 ### Molecular alignment 
 The molecular alignment that you will be using in this tutorial, file `10s.phy`,
-consists of 5,614 protein-coding genes from 10 mammal taxa (see Figure 1). 
+consists of 5,614 protein-coding genes from 10 mammal taxa (see Figure 1 above). 
 If you open file `10s.phy` with your preferred text editor, you will not find any gaps
 (i.e., there are no `-` in the 
 alignment). This is because all ambiguous codon sites were removed and, consequently, there are no
@@ -127,7 +126,7 @@ In addition, this alignment is separated into two partitions:
 
 Note that this alignment is a subset of a larger 36-taxon alignment used in 
 [dos Reis et al., 2012](https://royalsocietypublishing.org/doi/10.1098/rspb.2012.0683?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed), but also see 
-[dos Reis et al. 2018](hhttps://academic.oup.com/sysbio/article/67/4/594/4802240). 
+[dos Reis et al. 2018](https://academic.oup.com/sysbio/article/67/4/594/4802240). 
 
 >> **NOTE**: This alignment has been compress into site patterns to save disk space!
 
@@ -152,7 +151,7 @@ _f_(**t**,**r**,_μ_,_σ_|_D_) ∝ _f_(**t**) _f_(**r**|**t**,_μ_,_σ_<sup>2</s
 
    > Prior on times: _f_(**t**)    
    > Prior on the branch rates, mean rates, and log-variances of the rates: _f_(**r**|**t**,_μ_,_σ_<sup>2</sup>) _f_(_μ_) _f_(_σ_<sup>2</sup>)   
-   > Likelihood of our molecular alignment: _f_(_D_|**r**,**t**)   
+   > Likelihood of our data, the molecular alignment: _f_(_D_|**r**,**t**)   
 
 Remember that the **prior on the times** is constructed by combining the birth-death process 
 with the fossil calibration densities (see 
@@ -166,13 +165,13 @@ In a Bayesian phylogenetic analysis using MCMC, we need to calculate the
 likelihood (_f_(_D_|**r**,**t**)) for each site pattern on the molecular alignment 
 (e.g., even though an alignment
 might have 2,000,000 sites, there might only be 1,200,000 sites, and thus the likelihood would 
-only be computed once for each site pattern, so extra time is saved) 
-Consequently, calculating the likelihood is the most demanding computation during the MCMC, which 
+only be computed once for each site pattern, so extra time is saved). 
+According to this, calculating the likelihood is the most demanding computation during the MCMC as it 
 is proportional to the number of site patterns the alignment has: the longer the alignment, the 
 more time it will take to infer the timetree. If you have a phylogenomic dataset, computation 
 becomes prohibitive. 
 
-`MCMCtree` implements an approximation to the likelihood 
+`MCMCtree` implements an approximation to calculate the likelihood 
 that speeds computation time substantially, making analysis of genome-scale date feasible.
 The approximate likelihood method for clock dating was proposed by
 [Thorne et al. 1998](https://pubmed.ncbi.nlm.nih.gov/9866200/) and implemented in `MCMCtree`
@@ -186,13 +185,13 @@ Then, `MCMCtree` **estimates the branch lengths for each alignment partition** o
 The **gradient** and the **Hessian** of the log-likelihood are calculated for each partition at 
 the same time as the maximum likelihood estimates (MLEs) of the branch lengths. 
 The parameters of the substitution model (e.g., transition/transversion ratio, κ, in the 
-HKY moel or the α parameter of the discrete-gamma distribution that is used to model 
+HKY moel or the α parameter of the discrete gamma distribution that is used to model 
 rate heterogeneity among sites) are estimated at this step. 
 Consequently, different substitution models will generate **DIFFERENT** approximations as they 
 will have **different MLEs** for the branch lengths, gradient, and Hessian. 
 
 You can use the number of species in your alignment to estimate how long computing the approximation of the likelihood
-will take, as this is what determines the size of the vector for the branch lengths and the Hessian.
+will take, as this is what determines the size of the vector of the branch lengths and the Hessian.
 This means that, once the gradient and the Hessian have been calculated, MCMC sampling on the 
 approximation takes the same time regardless the length of the original alignment.
 
@@ -205,14 +204,15 @@ The steps that we will follow when running `MCMCtree` and `BASEML` are the follo
    3. Carry out MCMC diagnostics to check that the chain has converged.   
    4. Sample from the prior to make sure that there is no conflict between the effective prior (the 
    prior distribution that `MCMCtree` is using) and the user-specified prior (the prior distribution 
-   that the user specified in the control file). In this case, the data (molecular alignment) are not used 
-   as we just want to check that the prior on times that `MCMCtree` is using is not different 
-   from the prior the user has told `MCMCtree` to use (i.e., we want to make sure there is no conflict).   
+   that the user specified in the control file based on the fossil record). In this case, the data (molecular alignment) are not used 
+   as we just want to check that the prior on times that `MCMCtree` is using is not in conflict with 
+   the prior the user has told `MCMCtree` to use (i.e., we want to make sure there is no conflict) or the 
+   estimated posterior distribution.   
    
 
 ## 4. Hands-on: let's estimate our timetree!
 At this point, we assume that you have cloned the `divtimes` directory as all the commands
-that you will go through below refer to the file architecture that you will find 
+that you will go through below refer to the file architecture followed
 in this GitHub repository. Let's get started!
 
 ### A. Calculate the gradient and the Hessian 
@@ -239,17 +239,17 @@ calculation to infer your timetree:
 ```
 
 Note that `seqfile` and `treefile` have the relative path to the 
-molecular alignment and the calibrated phylogeny, respectively (this holds if you 
-have not changed anything when you have cloned the GitHub repository!). 
+molecular alignment and the calibrated phylogeny, respectively (the paths you see here hold if you 
+have not changed anything when you have cloned the GitHub repository! Otherwise, please 
+change accordingly). 
 
 The option `ndata` defines that you have two partitions in your molecular alignment and 
 `seqtype` specifies that your data is nucleotide data. 
 
 The most important option here is `usedata`. The first option, `0`, is the one that you 
 will use at the end when you are to run the MCMC but, instead of sampling from the 
-posterior, you will be sampling from the prior to assess that there is no conflict between 
-the user-specified prior and the effective prior that `MCMCtree` is using. The 
-second option, `1`, is use the exact likelihood calculation during the MCMC when 
+posterior, you will be sampling from the prior. The 
+second option, `1`, uses the exact likelihood calculation during the MCMC when 
 sampling from the posterior. The third option, `2`, is used to sample from the posterior using 
 the approximate likelihood, the option that you need to use **only**
 once you have calculated the gradient and the Hessian (they are needed to calculate the 
@@ -259,7 +259,7 @@ the data in a format that `BASEML` can compute the gradient and the Hessian (i.e
 call `BASEML` to carry out the latter task). 
 
 The options `model`, `alpha`, and `ncatG` 
-are used to setup the HKY85+G model (the last two enable the usage of the gamma distribution 
+are used to setup the HKY85+G model (the last two enable the usage of the discrete gamma distribution 
 with parameter α=0.5, `alpha`, and 5 categories, `ncatG`, to account for rate heterogeneity).
 
 Finally, the option `cleandata` tells `MCMCtree` if our dataset has ambiguous sites and, if so,
@@ -273,10 +273,10 @@ To start the analysis, open the terminal again inside directory `gH` and run:
 mcmctree mcmctree-outBV.ctl
 ```
 
-This will start `MCMCree`. As soon as it starts, you will several `tmp*` files: these are 
+This will start `MCMCree`. As soon as it starts, you will see that several `tmp*` files will be generated: these are 
 the files that `MCMCtree` is preparing for `BASEML`. Once these files are ready, `MCMCtree` 
-will call `BASEML` so it estimates the gradient and the Hessian. Once this analysis has finished,
-you will see that you have a file called `out.BV` in this directory. Part of this file will look 
+will call `BASEML` so it estimates the gradient and the Hessian. Once `BASEML` finishes,
+you will see that you have a new output file called `out.BV`. Part of this file will look 
 similar to the following (i.e., `[...]` indicates that the row continues):
 
 ```
@@ -341,17 +341,19 @@ Hessian
 ```
 
 First, you will notice that you have the similar information repeated twice: the gradient and the Hessian have 
-been computed for each partition **in the order they appear in the molecular alignment**. The order is very important
-as they have to specifically match the same position they are found in the `out.BV` file and in your molecular alignment,
-here `10s.phy` as the branch lengths, the gradient, and the Hessian have been compute specifically for each 
-partition. If you change the order, the approximation will be wrong.
+been computed for each partition **in the order they appear in the molecular alignment**. This order is very important
+as these blocks need to match the same position in which they are found in the molecular alignment (`10s.phy`). This is
+because the branch lengths, the gradient, and the Hessian have been computed specifically for each 
+partition in the order these partitions appear in the molecular alignment. If you change the order of these blocks,
+the approximation will be wrong as the estimates for the gradient and the Hessian will be used with the wrong partition 
+for which they have not been estimated.
 
 The content of the `out.BV` file for each partition is the following: 
 
 First, you will see the number of taxa (lines 2 and 31, `10`). Then, you will see the tree with the estimated
 branch lengths by maximum likelihood. Next, we have the MLEs of the 17 branch lengths (these are the same as in the 
 tree you have above, but they are just printed in a different order). Then, we have the gradient, which is the 
-vector of first derivateives of the likelihood at the branch length MLEs for the first partition (remember that, in 
+vector of first derivatives of the likelihood at the branch length MLEs for the first partition (remember that, in 
 our alignment, `10s.phy`, the first partition has the first and the second codon positions). If the dataset is 
 samall, you will expect the gradient to be usually zero. For large datasets, the likelihood surface is too sharp, which 
 means that the surface bends downwards sharply and it is very narrow at the MLEs. This means that the gradient is not 
@@ -362,7 +364,7 @@ the second partition: the alignment with third codon positions.
 
 ### B. Estimate the posterior of times and rates
 Now that you have the gradient and the Hessian estimated for each partition, you can run `MCMCtree` to infer the timetree!
-Copy the `gH/out.BV` file now in the `mcmc` director and rename it `in.BV`:
+Copy the `gH/out.BV` file now in the `mcmc` directory and rename it `in.BV`:
 
 ```sh
 # From directory `gH` 
@@ -426,18 +428,18 @@ Then, the option `clock` is used to define that we will be using a log-normal di
 independently drawn during the MCMC (value `2`). 
 
 The next option, `RootAge`, is not used anymore within the control file. Instead, this calibration is included
-in the tree file -- make sure that the file `10s.tree` has a calibration for the root age! So, what you should 
-do now, is delete this line in the control file and save the changes.
+in the tree file -- make sure that the file `10s.tree` has a calibration for the root age! Therefore, you should 
+now delete this line in the control file and save the changes accordingly.
 
 The options `model`, `alpha`, and `ncatG` have been defined in the same way you did in the first step when 
 you wanted to estimate the gradient and the Hessian. As you are using the approximate likelihood and this 
-nucleotide substitution model has been used in the previous step to compute these parameters, they will not have 
+nucleotide substitution model has been already used in the previous step to compute these parameters, they will not have 
 any effect in this step. 
 
 The next options are very important because they are going to define the prior distributions for 
 the model parameters! 
 
-   1. Prior on the times: option `BDparams` defubes the prior distribution for those nodes without fossil calibrations.
+   1. Prior on the times: option `BDparams` defiines the prior distribution for those nodes without fossil calibrations.
    Specifically, this distribution models the birth-death process. In this example, we are going to use λ = μ = 1 (values for the 
    birth and rate parameters, respectively) and ρ = 0 (sampling parameter). These parameters define a uniform 
    distribution between present time and the age of the root, which is the distribution that will be used as a prior on the times.   
@@ -445,7 +447,7 @@ the model parameters!
    α = 6 and β = 2 (i.e., mean value of κ is around α/β = 3). We are using the approximate likelihood calculation so,
    for this analysis, this prior **does not have any effect**.   
    3. Prior on α (shape parameter of discrete gamma distribution to account for rate heterogeneity): this prior is
-   gamma distribution with values α = 1 and β = 1 (i.e., mean value of α is around α/β = 1). We are using the
+   a gamma distribution with values α = 1 and β = 1 (i.e., mean value of α is around α/β = 1). We are using the
    approximate likelihood calculation so, for this analysis, this prior **does not have any effect**.   
    4. Prior on the evolutionary rate _r_: this prior is a gamma-Dirichlet distribution on the mean substitution rate 
    for the partitions. The mean evolutionary rate is estimated to be α/β = 2/40 = 0.05 substitutions per time (100 My, our 
@@ -469,10 +471,10 @@ directory and type the following command:
 mcmctree mcmctre.ctl 2>&1 | tee log_MCMCtree.txt
 ``` 
 
-This will start the MCMC sampling and will save a log file valled `log_MCMCtree.txt` with the messages that you will 
+This will start the MCMC sampling and will save a log file called `log_MCMCtree.txt` with the messages that you will 
 see printed on the screen of the terminal. During the first 20,000 iterations, `MCMCtree` will fine-tune the step sizes 
 to propose parameter values in the chain. Once this burn-in phase is finished, the sampling from the posterior 
-will start. You will see something like the following on your screen:
+will start. You will see something like the following on your screen then:
 
 ```
 
@@ -505,8 +507,8 @@ New     finetune:   0.00319  0.00268  0.00401  0.00273  0.00455  0.00527  0.0065
 ```
 
 The first column on the left shows the sampling as a percentage of the total (i.e., 5% 
-of the iterations completed, 10% of total iterations completed, etc.). Then, you have the 
-acceptance proportions, which are close to 30% (this is the result of fine-tuning by `MCMCtree`, 
+of iterations completed, 10% of total iterations completed, etc.). Then, you have the 
+acceptance proportions, which are close to 30%. This number is the result of fine-tuning by `MCMCtree`, 
 the blocks that you will see above this section:
 
 ```
@@ -516,7 +518,7 @@ Current finetune:
 New     finetune: 
 ```
 
-After the five acceptance proportions `MCMCtree prints the current values that are being sampled 
+After the five acceptance proportions `MCMCtree` prints the current values that are being sampled 
 for some of the parameters that are to be estimated. The last negative value is the likelihood, which 
 can be followed by the time taken so far every 5%.
 
@@ -534,7 +536,7 @@ mv FigTree.tre FigTree1.tre
 
 Once the output files are renamed, we can now rerun `MCMCtree` again. 
 
->> **IMPORTANT NOTE**: if you do not rename the files, they will be overwritten!
+>> **IMPORTANT NOTE**: if you do not rename the output files, they will be overwritten!
 
 ```sh 
 mcmctree mcmctree.ctl 2>&1 | tee log_MCMCtree_chain2.txt
@@ -549,7 +551,7 @@ mv SeedUsed SeedUsed2
 mv FigTree.tre FigTree2.tre
 ```
 
->> **PRO TIP**: If you want to run two chains at the same time, you can create two directories 
+>> **TIP**: If you want to run two chains at the same time, you can create two directories 
 >> where you have the necessary files saved and start `MCMCtree` simultaneously. 
 
 The most important information in the `out1.txt` and `out2.txt` files can be found at the 
@@ -584,27 +586,29 @@ lnL          -17.0440 (-25.9680, -10.0180) (-25.4820, -9.6890) 15.7930
 
 First, you have the species tree written in three formats: 
 
-   1. Tree 1:  the nodes are labelled with the corresponding node numbers.This is useful so you can then
+   1. Tree 1:  the nodes are labelled with the corresponding node numbers. This is useful so you can then
    check the age of each node according to its number.   
    2. Tree 2: the tree has the branch lengths in absolute time units.   
    3. Tree 3: this tree is like the second tree but now you see that the 95% confidence intervals of the node 
-   ages have been included. 
+   ages have been included.   
    
 Then, you have a table with all the estimated divergence times for each node, i.e., from node 11 to node 
 19 (this is why tree 1 is useful!). After that, you have the estimated values for the mean substitution rates 
 (`mu_1` and `mu_2`) and the rate variation coefficients for each partition (`sigma2_1` and `sigma2_2`). The last 
-row of this table is log-likelihood (`lnL`). Note that this table includes the posterior means, equal-tail CIs,
-and the high-posteior density CIs. For instance, the posterior age of the root, `t_n11`, is 
+row of this table is the log-likelihood (`lnL`). Note that this table includes the posterior means, equal-tail CIs,
+and the high-posteior density CIs. For instance, the posterior age of the root, node labelled as `t_n11`, is 
 119.46 (95.73, 147.97) Ma (remember that time unit is 100 million years!).
 
 You can use `FigTree` to visualise the two timetrees inferred for each run!
 
 ### C. MCMC diagnostics 
 We have seen in the previous tutorial how to use `Tracer` to explore the sampled values during an MCMC. 
-Now, we will use the `R/analysis.R` script to perform basic convergence tests.
+Now, we will use the
+[`R/analysis.R`](https://github.com/mariodosreis/divtime/blob/master/R/analysis.R)
+script to perform basic convergence tests.
 
 First, we will load the posterior mean time estimates in `out1.txt` and `out.txt` in R and we wil plot 
-them: run 1 vs run 2. In that way, if the plot shows that the points fall around the _y_ = _x_ line, 
+them one against the other: run 1 vs run 2. In that way, if the plot shows that the points fall around the _y_ = _x_ line, 
 we have an indicator that tells us that the chains have converged to the same distribution (which 
 hopefully is the posterior distribution we wanted to approximate!).
 
@@ -622,10 +626,10 @@ hopefully is the posterior distribution we wanted to approximate!).
 As we have seen in the lectures, you can also calculate the effective sample size (ESS) as a useful statistic 
 to have an idea about whether the MCMC has run long enough. We will be using the function 
 `coda::effectiveSize` that is implemented in R, which differs a bit from the one implemented in `Tracer` (i.e., if you 
-load the output files in `Tracer`, you might not get the same ESS). As we have discussed in previous 
+load the output files in `Tracer`, you might not see the same ESS). As we have discussed in previous 
 lectures and practical sessions, the larger the ESS, the better. For phylogenomic analysis, we can be happy if
 the ESS for all the parameters is equal to or larger than 200 (although this will not always be possible with very 
-large datasets). Once you run commands from lines 37 to 41, you will see this table (you will have different 
+large datasets). Once you run commands from lines 37 to 41, you will see the table below (you will have different 
 values unless you have used the same seed number that we have!):
 
 ```
@@ -646,19 +650,19 @@ sigma2_2   0.16386144   786.63122 4.150356e-03 0.0022969795
 lnL      -17.04395170 20001.00000 1.693107e+01 0.0290948656
 ```
 
-Here, you can see that the ESS for `t_n11`, `t_n12`, and `t_n14` is quite slow (even lower than 100).
+Here, you can see that the ESS values for `t_n11`, `t_n12`, and `t_n14` are quite low (even lower than 100).
 If we were to increase the number of iterations, we might be able to increase the ESS for these 
 parameters. We recommend you keep the same number of samples to 
-collect and just increaes the sampling frequency!
+collect and just increase the sampling frequency if you want to run the chain longer (this saves disk space!).
 
-At the same time, you can see that the larger the ESS, the smaller the standard deviation and 
-the better the estimates are. For instance, for node 11 we have estimated a mean age of 119.46 with 
-standard error of 1.60 million years. Therefore, we have estimated 
-the mean accurately to within 2 · 1.60 = 3.2 million years. To reduce the standard error by hald, we 
+At the same time, you can see that the larger the ESS, the smaller the standard deviation, and 
+the better the estimates are. For instance, for node 11, we have estimated a mean age of 119.46 with 
+a standard error of 1.60 million years. Therefore, we have estimated 
+the mean accurately to be within 2 · 1.60 = 3.2 million years. To reduce the standard error by half, we 
 would need to increase the ESS four times!!
 
-As we have mentioned in the lectures, we can combine independent MCMC runs (IF THEY HAVE CONVERGED TO 
-THE SAME DISTRIBUTION!) into a single run. In that way, we may save time by running several MCMC chains 
+As we have mentioned in the lectures, we can combine independent MCMC runs (**IF THEY HAVE CONVERGED TO THE SAME DISTRIBUTION!**)
+into a single run. In that way, we may save time by running several MCMC chains 
 in parallel.
 
 In addition, we can also plot the traces of the parameter values to assess chain convergence.
@@ -678,7 +682,7 @@ We can check the trace plots for those parameters with low/high ESS:
 The trace of node 19, which has a high ESS, looks like a "hairy caterpillar". Instead, the one for 
 node 11, which has a low ESS, does not. Visual inspection of a trace plot usually gives a sense of whether 
 the parameter has an adequate ESS without calculating it. Note that both traces are trendless, that is, the traces 
-oscillate around a mean value (the posterior mean). If you see a persistend trend in the trace (such as an 
+oscillate around a mean value (the posterior mean). If you see a persistent trend in the trace (such as an 
 increase or a decrease), that most likely means that the MCMC did not converge to the posterior and needs 
 a longer burn-in period. 
 
@@ -699,8 +703,8 @@ serious problems with the MCMC, such as lack of convergence due to short burn-in
 modes of a multi-modal posterior.
 
 ### D. MCMC sampling from the prior 
-At the beginning of this tutorial, we showed you the fossil calibrations that we have used 
-to calibrate the phylogeny in Figure 1 represented as statistical distributions in `MCMCtree` format
+At the beginning of this tutorial, we showed you the fossil calibrations used 
+to calibrate the phylogeny in Figure 1 (`10s.tree` file) represented as statistical distributions in `MCMCtree` format
 (see Table 1). `MCMCtree` uses these distributions to construct the prior on times. Nevertheless, sometimes 
 the prior that `MCMCtree` uses (effective prior) is very different from the one that we as users have told 
 this software to use based on the fossil record (user-specified prior). This might happen because the software 
@@ -716,11 +720,12 @@ mcmctree mcmctree-pr.ctl 2>&1 | tee log_MCMCtree_prior1.txt
 ```
 
 >> **NOTE**: You can open the control file with your preferred text editor. The most important change 
->> is `usedata = 0`, which specifies that no data should be used!
+>> in this file now is the option `usedata = 0`, which specifies that no data should be used and that 
+>> sampling is happening from the prior.
 
 This command will start MCMC sampling from the prior. You will see that this analysis is very fast because the likelihood 
 is not being calculated (no data are used!). Now, rename again the output files as you did before so you can repeat 
-the analysis and run a second chain to check for convergence. 
+the analysis and run a second chain so you can check for convergence. 
 
 
 <!--
@@ -735,23 +740,23 @@ the analysis and run a second chain to check for convergence.
 >> has been used to generate this figure.
 
 According to Figure 6 above, you can see that the posterior times "agree" with the prior for nodes 19, 18, 17, and 16.
-This means that th eposterior density is contained within the prior density.
+This means that the posterior density is contained within the prior density.
 For nodes 15, 13, and 11, however, there is some conflict between the prior and the posterior densities.
-For nodes 14 and 12, there is **substantial** conflict between the prior and the posterior: in both cases, the molecular data 
-(together with the clock model) suggest the node age is much older than the implied by the calibrations. This highlights the 
-problems in construction of fossil calibrations!
+For nodes 14 and 12, there is a **substantial** conflict between the prior and the posterior: in both cases, the molecular data 
+(together with the clock model) suggest the node age is much older than the one implied by the calibrations. This highlights the 
+problems in construction of fossil calibrations that we have discussed during the lecture.
 
-Remember that fossil calibartions represent the palaentologists's best guess about the age of a node. For instance, 
+Remember that fossil calibrations represent the palaentologists's best guess about the age of a node. For instance, 
 the caliration for the human-chimp ancestor is 
-`B(0.75, 0.10, 0.01, 0.20)`. Thereforem the calibration is a uniform distribution between 7.5 and 10 million years. The bounds 
+`B(0.75, 0.10, 0.01, 0.20)`. Therefore, the calibration is a uniform distribution between 7.5 and 10 million years. The bounds 
 of this calibration are soft, which means that there is a probability that the bound can be violated. In this case, the probabilities 
 are 1% for the minimum bound (0.75) and 20% for the maximum bound (0.10). The bound probabilities are asymmetrical because they 
 reflect the nature of the fossil information. Minimum bounds are usually set with confidence because they are based on the age 
-of the oldest fossil specimen of a clade. For instance, the minimum of 7.5 Ma is based on the age of _Sahelanthropus tchadensis_,
+of the oldest fossil specimen of a clade. For instance, the minimum of 7.5 Ma is based on the age of _†Sahelanthropus tchadensis_,
 which is regarded as the oldest fossil within the human lineage. On the other hand, establishing maximum bounds is very
 difficult, as absence of fossils for certain clades cannot be interpreted as evidence that the clade in question did not 
-exist for a particular geological time. Our maximum here of 10 million years represents the palaentologist's informed guess 
-about the likely oldest age of the clade. Nevertheless, a larger probability (20%) compared to the one used with the minimum is 
+exist for a particular geological time. Our maximum here of 10 million years represents the palaentologists's informed guess 
+about the likely oldest age of the clade. Nevertheless, a larger probability (20%) compared to the one used with the minimum (10%) is 
 given to the maximum bound to allow for the fact that the node age could be older. The conflict between the prior and the  
 posterior seen in Figure 6 above are proof of this conflict. 
 
@@ -764,11 +769,11 @@ calibration density used.
 
 ### 1. Autocorrelated rates model
 Modify file `mcmc/mcmctree.ctl` and set `clock = 3`. This activates the
-autocorrelated lognormal rates model, also known as the geometric Brownian motion
+autocorrelated log-normal rates model, also known as the geometric Brownian motion
 rates model. Run the MCMC twice and check for convergence. Compare the
 posterior times obtained with those obtained under the independent log-normal model
 (`clock = 2`). Are there any systematic differences in node age estimates between the
-two analysis? Which clock model produces the most precise (i.e., narrower CIs)
+two analyses? Which clock model produces the most precise (i.e., narrower CIs)
 divergence time estimates?
 
 ### 2. MCMC sampling with exact likelihood calculation
@@ -776,26 +781,26 @@ Modify file `mcmc/mcmctree.ctl` and set `clock = 2` (independent rates), `usedat
 `burnin = 200`, `sampfreq = 2`, and `nsample = 500`.
 These last three options will lead to a much shorter MCMC, with a total of 1,200
 iterations. Run the MCMC sampling twice and check for convergence using the ESS,
-histograms, and trace plots. How long does it take for the sampling to complete? Can
-you estimate how long would it take to run the analysis using 2,020,000 iterations, as
+histograms, and trace plots. How long does it take to complete the sampling? Can
+you estimate how long it would take to run the analysis using 2,020,000 iterations, as
 long as for the approximate method you have used in the main part of this tutorial? Did the two chains converge
 despite the low number of iterations?
 
 ### 3. Change fossil calibrations
 There is some controversy over whether †Sahelantrhopus, used to set the minimum
 bound for the human-chimp divergence, is indeed part of the human lineage. The next
-(younger) fossil in the human lineage is †Orrorin which dates to around 6 Ma. Modify
+(younger) fossil in the human lineage is †Orrorin, which dates to around 6 Ma. Modify
 file `data/10s.tree` and change the calibration in the human-chimp node to `B(0.057, 0.10, 0.01, 0.2)`.
 Also, change the calibration on the root node to `B(542 0.615, 1.315, 0.01, 0.05)`.
 Now, run the MCMC analysis
-with the approximate method and again sampling from
+with the approximate method (sampling from the posterior) and also sampling from
 the prior. Are there any substantial differences in the posterior distributions of times
 under the new fossil calibrations? Which nodes are affected? How bad is the truncation
 effect among the calibration densities and the prior?
 
 ### 4. Compare calibration densities and prior densities 
 This is a difficult exercise. Use R to plot the prior densities of times sampled using MCMC.
-Now try to work out how to overlay the calibration densities
+Now, try to work out how to overlay the calibration densities
 onto the plots. First, write functions that
 calculate the calibration densities. The `dunif` function in R is useful to plot uniform
 calibrations. Functions `sn::dsn` and `sn::dst` (in the `sn` package) are useful to plot
@@ -806,16 +811,16 @@ the calibration densities? Are there any substantial truncation effects?
 ### 5. Time estimation in a super-matrix of 330 taxa 
 Good taxon sampling is critical to obtaining robust estimates of divergence times for
 clades. In the `data/` directory, an alignment of the 1st and 2nd codon positions from
-mitochondrial protein-coding genes from 330 species (326 primate and 4 outgroup
-species) is provided, `330s.phys`, with corresponding tree topology, `330s.tree`.
+mitochondrial protein-coding genes from 330 species (326 primates and 4 outgroup
+species) is provided, `330s.phys`, with the corresponding tree topology, `330s.tree`.
 First, place the fossil calibrations of Table 1 on the appropriate nodes of the species tree.
-Then obtain the gradient and Hessian matrix for the 330-species alignment using the
-HKY+G model. Finally, estimate the divergence times on the 330-species phylogeny by
+Then, obtain the gradient and the Hessian matrix for the 330-taxon alignment using the
+HKY+G model. Finally, estimate the divergence times on the 330-taxon phylogeny by
 using the approximate likelihood method. 
 
 How does taxon sampling affect node age
 estimates when comparing the 10-species and 330-species trees? How does uncertainty
-in node ages in the large tree, which was estimated on a short alignment, 566 compare with
+in node ages in the large tree, which was estimated on a short alignment, compare with
 the estimates on the small tree, but with a large alignment?
 
 ---
