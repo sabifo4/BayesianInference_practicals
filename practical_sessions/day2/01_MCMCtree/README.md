@@ -128,7 +128,7 @@ Note that this alignment is a subset of a larger 36-taxon alignment used in
 [dos Reis et al., 2012](https://royalsocietypublishing.org/doi/10.1098/rspb.2012.0683?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed), but also see 
 [dos Reis et al. 2018](https://academic.oup.com/sysbio/article/67/4/594/4802240). 
 
->> **NOTE**: This alignment has been compress into site patterns to save disk space!
+>> **NOTE**: This alignment has been compressed into site patterns to save disk space!
 
 ## 3. Review of the Bayes' theorem and the approximate likelihood
 
