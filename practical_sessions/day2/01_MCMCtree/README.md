@@ -468,7 +468,7 @@ Now, you are ready to run `MCMCtree`! If you are not yet in directory `mcmc`, go
 directory and type the following command:
 
 ```sh 
-mcmctree mcmctre.ctl 2>&1 | tee log_MCMCtree.txt
+mcmctree mcmctree.ctl 2>&1 | tee log_MCMCtree.txt
 ``` 
 
 This will start the MCMC sampling and will save a log file called `log_MCMCtree.txt` with the messages that you will 
