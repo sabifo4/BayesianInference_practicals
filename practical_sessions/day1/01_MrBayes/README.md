@@ -40,7 +40,7 @@ Once we have defined our input alignment in NEXUS format, we can generate the co
 
 **BLOCK 2: Define analysis in `MrBayes`**:
 
-* `charset`: this command is used to specify different datasets that you want to analyse based on your pre-defined input alignment. For instance, you may have two genes which could be labelled with a specific tag and which number of nucleotide bases is defined. This command can also be useful if you decide to partition your dataset and give a specific tag to each alignment block.  The format followed is the following: `charset <name_set>=<start_post>:<end_pos>`.
+* `charset`: this command is used to specify different datasets that you want to analyse based on your pre-defined input alignment. For instance, you may have two genes which could be labelled with a specific tag and which number of nucleotide bases is defined. This command can also be useful if you decide to partition your dataset and give a specific tag to each alignment block.  The format followed is the following: `charset <name_set>=<start_pos>:<end_pos>`.
 * `partition`: this command uses the information you have passed to `charset` and the names you gave to each character set. The format followed is the following: `partition <name_partition> = <num_partitions>:<name_charset1>, ...,<name_chraset_n`. E.g.:
 
  ```text
