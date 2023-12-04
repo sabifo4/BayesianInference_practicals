@@ -1,42 +1,30 @@
-# PART 1
+# Bayesian inference in R
 
-## Introduction 
-The data that we will be using for this practical session is the 12S rRNA alignment
-of human and orangutan, which consists of 948 base pairs and 90 differences
-(i.e., 84 transitions and 6 transversions):
+## PART 1: Bayesian inference overview
 
-> **Table 1**. Numbers and frequencies (in parantheses) of sites for the 16 site configurations
-> (patterns) in human and orangutan mitochondrial 12s rRNA genes.
-> This table is based on Table 1.3, page 7 in [Yang (2014)](http://abacus.gene.ucl.ac.uk/MESA/).
+### Introduction to the dataset
 
-| Orangutan (below) \ Human (right) | T               | C             | A              | G              | Sum ($\pi_{i}$)|
-|-------------------------------------------|-----------------|---------------|----------------|----------------|---------------|
-| T                                         | 179 (0.188819)  | 23 (0.024262) | 1 (0.001055)   | 0 (0)          | 0.2141        |
-| C                                         | 30 (0.03164646) | 219 (0.231013)| 2 (0.002110)   | 0 (0)          | 0.2648        |
-| A                                         | 2 (0.002110)    | 1 (0.001055)  | 291 (0.306962) | 10 (0.010549)  | 0.3207        |
-| G                                         | 0 (0)           | 0 (0)         | 21 (0.022152)  | 169 (0.178270) | 0.2004        |
-| Sum($\pi_{j}$                              | 0.226           | 0.2563        | 0.3323         | 0.1888         | 1             |
+The data that we will be using for this practical session is the 12S rRNA alignment of human and orangutan, which consists of 948 base pairs and 90 differences (i.e., 84 transitions {"purine<->purine" or "pyrimidine<->pyrimidine"} and 6 transversions {"purine<->pyrimidine"};
+purines are A and G and pyrimidines C and T):
 
->> *Note*: Genbank accesion numbers for the human and orangutan sequences are 
->> `D38112` and `NC_001646`, respectively ([Horai et al. (1995)](https://pubmed.ncbi.nlm.nih.gov/7530363/)).
->> There are 954 sites in the alignment, but six sites involve alignment gaps and are removed, leaving 948 sites 
->> in each sequence. The average base frequencies in the two sequences are 0.2184 (T), 
->> 0.2605 (C), 0.3265 (A), and 0.1946 (G).
+> **Table 1**. Numbers and frequencies (in parantheses) of sites for the 16 site configurations (patterns) in human and orangutan mitochondrial 12s rRNA genes. This table is based on Table 1.3, page 7 in [Yang (2014)](http://abacus.gene.ucl.ac.uk/MESA/).
 
-We are going to use the [R programming language](https://cran.r-project.org/) to load, parse, and analyse the data.
-You can also run all the commands we will go through in this tutorial from the 
-graphical interface [RStudio](https://www.rstudio.com/products/rstudio/download/).
-If you are unfamiliar with the installation of both these software, you can follow a
-step-by-step tutorial 
-[here](https://github.com/sabifo4/RnBash/tree/master/R_installation). This tutorial has a detailed explanation 
-of each task that you are going to carry out. Note that you can also find all the code shown and explained 
-here in [this R script](Practical_1.R).
+| Orangutan (below) \ Human (right)         | T               | C             | A              | G              | Sum ($\pi_{i}$)|
+|-------------------------------------------|-----------------|---------------|----------------|----------------|----------------|
+| T                                         | 179 (0.188819)  | 23 (0.024262) | 1 (0.001055)   | 0 (0)          | 0.2141         |
+| C                                         | 30 (0.03164646) | 219 (0.231013)| 2 (0.002110)   | 0 (0)          | 0.2648         |
+| A                                         | 2 (0.002110)    | 1 (0.001055)  | 291 (0.306962) | 10 (0.010549)  | 0.3207         |
+| G                                         | 0 (0)           | 0 (0)         | 21 (0.022152)  | 169 (0.178270) | 0.2004         |
+| Sum($\pi_{j}$)                            | 0.2226          | 0.2563        | 0.3323         | 0.1888         | 1              |
 
-## Analysing the data
-First, we will define the variables for our data set: the length of the alignment, 
-the total number of transitions (i.e., substitutions between the two pyrimidines, 
-`T <-> C)`), and the total number of transversions (i.e., substitutions between 
-the two purines, `A <-> G`):
+>> *Note*: GenBank accession numbers for the human and orangutan sequences are `D38112` and `NC_001646`, respectively ([Horai et al. (1995)](https://pubmed.ncbi.nlm.nih.gov/7530363/)). There are 954 sites in the alignment, but six sites involve alignment gaps and are removed, leaving 948 sites in each sequence. The average base frequencies in the two sequences are 0.2184 (T), 0.2605 (C), 0.3265 (A), and 0.1946 (G).
+
+We are going to use the [R programming language](https://cran.r-project.org/) to load, parse, and analyse the data. You can also run all the commands we will go through in this tutorial from the graphical interface [RStudio](https://www.rstudio.com/products/rstudio/download/).
+If you are unfamiliar with the installation of both these software, you can follow [this step-by-step tutorial](https://github.com/sabifo4/RnBash/tree/master/R_installation) for a detailed explanation of each task that you are going to carry out. Note that you can also find all the code shown and explained in this file in [this R script](Practical_1.R).
+
+### Analysing the data
+
+First, we will define the variables for our data set: the length of the alignment, the total number of transitions (i.e., A<->G or C<->T), and the total number of transversions (i.e., A<->T, G<->C, G<->T, A<->C):
 
 ```r
 # Length of alignment in bp
@@ -47,19 +35,15 @@ ns <- 84
 nv <- 6
 ```
 
-Then, we need to write a function that returns us the log-likelihood given the 
-distance between two sequences ($d$) and the transition/transversion rate ratio ($\kappa=\alpha/\beta$), 
-which is written as $f(D|d,k)$. This function might change depending on the nucleotide substitution model
-that is to be used. In this practical session, we will be using Kimura's 1980 (K80) nucleotide
-substitution model (see page 8, [Yang (2014)](http://abacus.gene.ucl.ac.uk/MESA/)), which 
-accounts for the fact that transitions often occur at higher rates than transversions.
-Therefore, the parameters to consider are the following:   
+Then, we need to write a function that returns the log-likelihood given the distance between two sequences ($d$) and the transition/transversion rate ratio ($\kappa=\alpha/\beta$), which is written as $f(D|d,k)$. This function might change depending on the nucleotide substitution model
+that is to be used. In this practical session, we will be using Kimura's 1980 (K80) nucleotide substitution model (see page 8, [Yang (2014)](http://abacus.gene.ucl.ac.uk/MESA/)), which accounts for the fact that transitions often occur at higher rates than transversions.
+Therefore, the parameters to consider are the following:
 
-   * Distance, $d$.   
-   * Kappa, $\kappa$.   
-   * Alignment length, $n$. In this example, $n=948$.   
-   * Number of transitions, $ns$. In this example, $ns=84$.   
-   * Number of transversions, $nv$. In this example, $nv=6$.   
+* Distance, $d$.
+* Kappa, $\kappa$.
+* Alignment length, $n$. In this example, $n=948$.
+* Number of transitions, $ns$. In this example, $ns=84$.
+* Number of transversions, $nv$. In this example, $nv=6$.
 
 ```r
 # Define log-likelihood function, f(D|d,k).
@@ -71,7 +55,7 @@ Therefore, the parameters to consider are the following:
 #   k  Numeric, value for parameter kappa.
 #   n  Numeric, length of the alignment. Default: 948.
 #   ns Numeric, total number of transitions. Default: 84.
-#   nv Numeric, total number of transcersions. Default: 6.
+#   nv Numeric, total number of transversions. Default: 6.
 k80.lnL <- function( d, k, n = 948, ns = 84, nv = 6 ) {
 
   # Define probabilities
@@ -86,12 +70,7 @@ k80.lnL <- function( d, k, n = 948, ns = 84, nv = 6 ) {
 }
 ```
 
-Once we have defined our log-likelihood function, we can now decide which 
-values we want to use for $d$ and $\kappa$ (i.e., those values that we will 
-input in the R function that we have just defined to calculate the log-likelihood).
-We are going to select 100 values for $\kappa$ that range from 0 to 100 and
-100 values for $d$ that range from 0 to 0.3. Then, we can create a data frame
-that includes all possible combinations of the values selected for $d$ and $\kappa$:
+Once we have defined our log-likelihood function, we can now decide which values we want to use for $d$ and $\kappa$ (i.e., those values that we will input in the R function that we have just defined to calculate the log-likelihood). We are going to select 100 values for $\kappa$ that range from 0 to 100 and 100 values for $d$ that range from 0 to 0.3. Then, we can create a data frame that includes all possible combinations of the values selected for $d$ and $\kappa$:
 
 ```r
 # Dimension for the plot
@@ -103,27 +82,21 @@ k.v <- seq( from = 0, to = 100, len = dim )
 dk  <- expand.grid( d = d.v, k = k.v )
 ```
 
-The resulting data frame object has 10,000 rows and 2 columns, which means that 
-10,000 combinations for $d$ and $\kappa$ values have been recorded in this object.
+The resulting data frame object has 10,000 rows and 2 columns, which means that 10,000 combinations for $d$ and $\kappa$ values have been recorded in this object.
 
-Now, we can use this object so the log-likelihood is calculated for each pair 
-of $d$ and $\kappa$ values that can be found in each row. We will use the `k80.lnL()` 
-function previously defined to compute the corresponding log-likelihood values. We will 
-save the output values in a matrix and then scale the likelihood values to be 1: 
+Now, we can use this object to go through the matchings pairs of $d$ and $\kappa$ values so that we can compute the corresponding log-likelihood values with the `k80.lnL()` function previously defined. Last, we will save the output log-likelihood values in a matrix (i.e., object `lnL` below), which we will then transform into likelihood values scaled to 1:
 
 ```r
-# Compute likelihood surface, f(D|d,k)
+# Compute log-likelihood surface, f(D|d,k)
 lnL <- matrix( k80.lnL( d = dk$d, k = dk$k ), ncol = dim )
 
-# For numerical reasons, we scale the likelihood to be 1
-# at the maximum, i.e. we subtract max(lnL)
+# For numerical reasons, we take the exponential to
+# get the likelihood, then scale it to be 1
+# at the maximum, i.e., we subtract max(lnL)
 L <- exp( lnL - max( lnL ) )
 ```
 
-We have now computed the log-likelihood values for each pair of $d$ and $\kappa$ values 
-provided! Before plotting its surface, however, we can also compute the prior 
-and the unscaled posterior surfaces for these same values so we can visually 
-see how these surfaces change in the parameter space: 
+We have now computed the log-likelihood values for each pair of $d$ and $\kappa$ values provided! Before plotting the scaled likelihood surface, however, we can also compute the prior and the unscaled posterior surfaces for these same values so we can visually see how these surfaces change in the parameter space:
 
 ```r
 # Compute prior surface, f(D)f(k)
@@ -133,9 +106,9 @@ Pri <- matrix( dgamma( x = dk$d, shape = 2, rate = 20 ) *
 
 # Compute unscaled posterior surface, f(d)f(k)f(D|d,k)
 Pos <- Pri * L
-``` 
+```
 
-Once we have computed the three surfaces, we can plot them! 
+Once we have computed the three surfaces, we can plot them!
 
 ```r
 # Plot prior, likelihood, and unscaled posterior surfaces.
@@ -167,31 +140,25 @@ contour( x = d.v, y = k.v, z = Pos, nlev = 10,
   <img width="700" height="400" src="../../../figs/figs_R_MCMC/fig1.png">
 </p>
 
-# PART 2: Markov Chain Monte Carlo (MCMC) 
+## PART 2: Markov Chain Monte Carlo (MCMC)
 
-## Introduction
-Now, we want to obtain the posterior distribution by MCMC sampling.
-In most practical problems, constant $z$ cannot be calculated (either
-analytically or numerically), and so the MCMC algorithm becomes necessary.
-In this case, we do not calculate the posterior as: 
+### Introduction to MCMC
+
+In most practical problems, constant $z$ cannot be calculated (either analytically or numerically), and so the MCMC algorithm becomes necessary.
+In this case, we do not calculate the posterior as:
 
 > $f(\kappa,d|D)=\frac{f(d)f(\kappa)f(D|d,\kappa)}{z}$
 
-Instead, we approximate the posterior to be the product of the 
-prior (in our case, we have two priors: the prior on $d$ and the prior 
-on $\kappa$) and the likelihood. To calculate this **unscaled** posterior, we do 
-the following: 
+Instead, we **approximate** the posterior to be the product of the prior (in our case, we have two priors: the prior on $d$ and the prior on $\kappa$) and the likelihood. To calculate this **unscaled** posterior, we do the following:
 
 > $f(\kappa,d|D)\propto f(d)f(\kappa)f(D|d,\kappa)$
 
-The priors for $d$ and $\kappa$ are Gamma distributions, which depend on 
-parameters $\alpha$ and $\beta$, i.e.,  $\Gamma(\alpha,\beta)$. E.g.:   
+The priors for $d$ and $\kappa$ are Gamma distributions, which depend on parameters $\alpha$ and $\beta$, i.e., $\Gamma(\alpha,\beta)$. E.g.:
 
-> $f(d)=\Gamma(d|2,20)$, if $\alpha=2$ and $\beta=20$.   
-> $f(\kappa)=\Gamma(d|2,.1)$, if $\alpha=2$ and $\beta=0.1$.   
- 
-We can write a function to compute the unscaled posterior, which we 
-will later use when running the MCMC:
+> $f(d)=\Gamma(d|2,20)$, if $\alpha=2$ and $\beta=20$.
+> $f(\kappa)=\Gamma(d|2,.1)$, if $\alpha=2$ and $\beta=0.1$.
+
+We can write a function to compute the unscaled posterior, which we will later use when running the MCMC:
 
 ```r
 # Define function that returns the logarithm of the unscaled posterior:
@@ -205,7 +172,7 @@ will later use when running the MCMC:
 #   k     Numeric, value for parameter kappa.
 #   n     Numeric, length of the alignment. Default: 948.
 #   ns    Numeric, total number of transitions. Default: 84.
-#   nv    Numeric, total number of transcersions. Default: 6.
+#   nv    Numeric, total number of transversions. Default: 6.
 #   a.d.  Numeric, alpha value of the Gamma distribution that works as a prior
 #         for the distance (d). Default: 2.
 #   b.d.  Numeric, beta value pf the Gamma distribution that works as a prior
@@ -221,7 +188,7 @@ ulnPf <- function( d, k, n = 948, ns = 84, nv = 6,
   lnpriord <- ( a.d - 1 )*log( d ) - b.d * d
   lnpriork <- ( a.k - 1 )*log( k ) - b.k * k
 
-  # Define log-Likelihood (K80 model)
+  # Define log-likelihood (K80 model)
   expd1 <- exp( -4*d/( k+2 ) )
   expd2 <- exp( -2*d*( k+1 )/( k+2 ) )
   p0 <- .25 + .25 * expd1 + .5 * expd2
@@ -234,21 +201,18 @@ ulnPf <- function( d, k, n = 948, ns = 84, nv = 6,
 }
 ```
 
-## The MCMC algorithm
-Once we have established the function to compute the unscaled posterior, 
-we need to define the function that we will use to run our MCMC!
-The algorithm that we will implement in this function has five main 
-parts, which we detail below:   
+### The MCMC algorithm
 
-   1. Set initial states for $d$ and $\kappa$.   
-   Now, for $n$ iterations:   
-      2. Propose a new state $d^{\*}$ (from an appropriate proposal density).   
-      3. Accept or reject the proposal with probability: $\mathrm{min}(1,p(d^{\*})p(x|d^{\*})/p(d)p(x|d))$. 
-      If the proposal is accepted, then $d=d^{\*}$. Otherwise, the same state for $d$ is kept 
-      for the next iteration, $d=d$.   
-      4. Save $d$.   
-      5. Repeat steps 2-4 for $\kappa$.   
-      6. Go to step 2.
+Once we have established the function to compute the unscaled posterior, we need to define the function that we will use to run our MCMC!
+The algorithm that we will implement in this function has the following sections:
+
+* Part A: First, set initial states for $d$ and $\kappa$.
+* Part B: Now, for every $n_{th}$ iteration:
+  1. Propose a new state $d^{*}$ (from an appropriate proposal density).
+  2. Accept or reject the proposal with probability: $\mathrm{min}(1,p(d^{*})p(x|d^{*})/p(d)p(x|d))$. If the proposal is accepted, then $d=d^{*}$. Otherwise, the same state for $d$ is kept for the next iteration, $d=d$.
+  3. Save $d$.
+  4. Repeat steps 1-3 for $\kappa$.
+  5. Go to step 1.
 
 ```r
 # Define function with MCMC algorithm.
@@ -336,19 +300,15 @@ mcmcf <- function( init.d, init.k, N, w.d, w.k ) {
 }
 ```
 
-Before proceeding with the next steps, we can set a seed number so we can 
-later reproduce the results that we get with the MCMCs that are to be run
-from this part of the tutorial until the end. You can ommit running the next
-command if you want to get different results each time you run this tutorial:
+Before proceeding with the next steps, we can set a seed number so we can later reproduce the results that we get with the MCMCs that are to be run from this part of the tutorial until the end. You can omit running the next command if you want to get different results each time you run this tutorial:
 
 ```r
 set.seed( 12345 )
 ```
 
-## Running an MCMC
-Before we run our MCMC function, we might want to estimate 
-how long this might take. The function `system.time()` can be used for 
-this purpose:
+### Running an MCMC
+
+Before we run our MCMC function, we might want to estimate how long this might take. The function `system.time()` can be used for this purpose:
 
 ```r
 # Test run-time
@@ -356,9 +316,7 @@ system.time( mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                     w.d = .12, w.k = 180 ) )
 ```
 
-Once we have an estimate of the time it can take us to run an MCMC
-with specific settings (see R code above), we can run our function 
-and save the output in an object:
+Once we have an estimate of the time it can take us to run an MCMC with specific settings (see R code above), we can run our function and save the output in an object:
 
 ```r
 # Run MCMC and save output
@@ -366,11 +324,11 @@ dk.mcmc <- mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                   w.d = .12, w.k = 180 )
 ```
 
-## MCMC diagnostics: using trace plots
-The next step is very important: you need to make sure that your chain 
-has converged and that there have been no issues during the sampling. 
-For this purpose, we can use visual diagnostics such as plotting the traces of 
-the sampled values during the $n$ iterations the chain ran:
+## PART 3: MCMC diagnostics
+
+### Trace plots
+
+The next step is very important: you need to make sure that your chain has converged and that there have been no issues during the sampling. For this purpose, we can use visual diagnostics such as plotting the traces of the sampled values during the $n$ iterations the chain ran:
 
 ```r
 # Plot traces of the values sampled for each parameter
@@ -390,37 +348,23 @@ plot( x = dk.mcmc$d, y = dk.mcmc$k, pch = '.', xlab = "d",
   <img width="800" height="400" src="../../../figs/figs_R_MCMC/fig2.png">
 </p>
 
-What would you say about these chains? Have they converged?
-As an additional exercise, you can change the starting parameter values, run an MCMC with the new settings,
-and then check for chain convergence. Does something change with your new settings?
+>**QUESTION**: What would you say about these chains? Have they converged? As an additional exercise, you can change the starting parameter values, run an MCMC with the new settings, and then check for chain convergence. Does something change with your new settings?
 
+### Autocorrelation Function (ACF) plots
 
-# PART 3: Efficiency of the MCMC chain
+Remember that values sampled in an MCMC are autocorrelated because the proposed state for the next iteration is either the current state
+(i.e., the new proposed state during the current iteration is rejected, and thus the current state is kept for the next iteration) or a modification of such (i.e., the new state, which is proposed based on a distribution that uses the current state, is accepted to be used in the next iteration).
 
-## Introduction
-Remember that values sampled in an MCMC are autocorrelated because the 
-proposed state for the next iteration is either the current state
-(i.e., the new proposed state during the current iteration is
-rejected, and thus the current state is kept for the next iteration) or a modification
-of it (i.e., the new proposed state, based on a distribution that uses the current 
-state, is accepted to be used in the next iteration).
-
-In addition, the efficiency of an MCMC chain is closely related to the autocorrelation.
-Intuitively, if the autocorrelation is high, the chain will be inefficient,
-i.e., we will need to run the chain for a long time to obtain a good
-approximation to the posterior distribution.
+In addition, the efficiency of an MCMC chain is closely related to the autocorrelation. Intuitively, if the autocorrelation is high, the chain will be inefficient, i.e., we will need to run the chain for a long time to obtain a good approximation of the posterior distribution.
 
 The efficiency of a chain is defined as:
 > $eff=1/(1+2(r1+r2+r3+...))$
 
 where $r_{i}$ is the correlation for lag $i$.
 
-We are going to go through different examples with which we can evalute
-chain efficiency.
+We are going to go through different examples with which we can evaluate chain efficiency.
 
-## Autocorrelation Function (ACF) plots
-First, we will run a very long chain and plot 
-the corresponding autocorrelation function (ACF) for each parameter:
+First, we will run a very long chain and plot the corresponding autocorrelation function (ACF) for each parameter:
 
 ```r
 # Run n=1e6 iterations
@@ -432,15 +376,16 @@ par( mfrow = c( 1,2 ) )
 acf( x = dk.mcmc2$d )
 acf( x = dk.mcmc2$k )
 ```
+
 <p align="center">
   <img width="800" height="400" src="../../../figs/figs_R_MCMC/fig3.png">
 </p>
 
-What can you tell about this MCMC run by looking at these ACF plots? 
+>**QUESTION**: What can you say about this MCMC run by looking at these ACF plots?
 
-## Calculating chain efficiency values
-Apart from calculating and plotting the ACF, we can also calculate chain efficiency.
-For this purpose, we use the following function:
+### Chain efficiency
+
+Apart from calculating and plotting the ACF, we can also calculate chain efficiency. For this purpose, we use the following function:
 
 ```r
 # Define efficiency function
@@ -450,8 +395,7 @@ For this purpose, we use the following function:
 eff <- function( acf ) 1 / ( 1 + 2 * sum( acf$acf[-1] ) )
 ```
 
-As we have saved the sampled values from the chain previously run 
-in object `dk.mcmc2`, we can now compute this chain's efficiency:
+As we have saved the sampled values from the chain previously run in object `dk.mcmc2`, we can now compute the corresponding chain efficiency:
 
 ```r
 # Compute efficiency
@@ -459,19 +403,18 @@ eff( acf = acf( dk.mcmc2$d ) )
 eff( acf = acf( dk.mcmc2$k ) )
 ```
 
-What can you tell about this chain with regards to the efficiency 
-values you have just computed?
+>**QUESTION**: What can you say about this chain with regards to the efficiency values you have just computed?
 
-## Comparing efficient VS inefficient MCMCs 
+### Time to practice
 
-### Example 1
-We will now run another MCMC but, this time, using
-a proposal density with a too large step size for parameter $d$ and another
-with a too small step size for parameter $\kappa$:
+#### Example 1
+
+We will now run another MCMC but, this time, using a proposal density with a too large step size for parameter $d$ and another with a too small step size for parameter $\kappa$:
+
 ```r
 dk.mcmc3 <- mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                    w.d = 3, w.k = 5 )
-``` 
+```
 
 When the MCMC has finished, we can plot the corresponding traces for each parameter:
 
@@ -488,11 +431,11 @@ plot( x = dk.mcmc3$k, ty = 'l', main = "Trace of k", cex.main = 2.0,
   <img width="400" height="400" src="../../../figs/figs_R_MCMC/fig4.png">
 </p>
 
-What can you tell about the chain efficiency when using these parameters?
+>**QUESTION**: What can you say about chain efficiency when using these parameters?
 
-### Example 2
-Now, we run the chain longer but keep the same starting values for the
-rest of the parameters. Then, we compute the chain efficiency for each
+#### Example 2
+
+Now, we run the chain longer but keep the same starting values for the rest of the parameters. Then, we compute the chain efficiency for each
 parameter:
 
 ```r
@@ -518,22 +461,17 @@ plot( dk.mcmc$k, ty = 'l', las = 1, ylim = c( 0,100 ),
 plot( dk.mcmc3$k, ty = 'l', las = 1, ylim = c( 0,100 ),
       main = "Trace of k, inefficient chain",
       xlab = '', ylab = '', cex.main = 2.0, cex.lab = 1.5 )
-``` 
+```
 
 <p align="center">
   <img width="700" height="400" src="../../../figs/figs_R_MCMC/fig5.png">
 </p>
 
-What differences can you observe after running the chain longer?
+>**QUESTION**: What differences can you observe after running the chain longer?
 
+#### Example 3
 
-# PART 4: Checking for convergence 
-Last, we will learn more about the concept of burn-in and its effect 
-on chain convergence. 
-
-## Example 1 
-We will run two different chains: one with a high starting value for parameters $d$
-and $\kappa$ and another with a low starting value for these two parameters:
+We will now run two different chains: one with a high starting value for parameters $d$ and $\kappa$ and another with a low starting value for these two parameters:
 
 ```r
 # Run MCMCs with high/low starting values for parameters d and k.
@@ -543,9 +481,7 @@ dk.mcmc.h <- mcmcf( init.d = 0.4, init.k = 20, N = 1e4,
                     w.d = .12, w.k = 180 )
 ```
 
-Now, we can compute the mean and the standard deviation of parameter $d$.
-Below, we show you how this can be done when using the "low" chain, although we could 
-have used the "high" chain too: 
+Now, we can compute the mean and the standard deviation of parameter $d$. Below, we show you how this can be done when using the "low" chain, although we could have used the "high" chain too:
 
 ```r
 # Compute mean and sd for d
@@ -553,10 +489,8 @@ mean.d <- mean( dk.mcmc.l$d )
 sd.d   <- sd( dk.mcmc.l$d )
 ```
 
-Now, we can plot the two chains, "low" and "high", to observe how the chains 
-move from either the high or low starting values towards the  
-stationary phase (the area within the dashed lines). The area before it 
-reaches stationarity is what we call the "burn-in" phase: 
+Now, we can plot the two chains, "low" and "high", to observe how the chains move from either the high or low starting values towards the  
+stationary phase (the area within the dashed lines). The area before it reaches stationarity is what we call the "burn-in" phase:
 
 ```r
 # Plot the two chains 
@@ -571,9 +505,9 @@ abline( h = mean.d + 2 * c( -sd.d, sd.d ), lty = 2 )
   <img width="400" height="400" src="../../../figs/figs_R_MCMC/fig6.png">
 </p>
 
-## Example 2 
-We are going to run two chains with different starting values so 
-we can compare their efficiency: 
+#### Example 4
+
+We are going to run two chains with different starting values so we can compare their efficiency:
 
 ```r
 # Run an efficient chain (i.e., good proposal step sizes)
@@ -605,10 +539,7 @@ hist( x = dk.mcmc3$k, prob=TRUE, breaks=bks, border=NA,
   <img width="800" height="400" src="../../../figs/figs_R_MCMC/fig7.png">
 </p>
 
-Now, as we did in the previous example, we will compute the mean and 
-the standard deviation for each chain. Then, we will plot the 
-corresponding densities so it is easier to see which chains 
-are more or less efficient:
+Now, as we did in the previous example, we will compute the mean and the standard deviation for each chain. Then, we will plot the corresponding densities so it is easier to see which chains are more or less efficient:
 
 ```r
 # A) Calculate the posterior means and s.d for each chain.
@@ -645,4 +576,5 @@ lines( x = density( x = dk.mcmc3$k, adjust = adj ), col = "black" )
 </p>
 
 ---
-This is the end of this tutorial!
+
+This is the end of this tutorial! Now, let's have a break and we shall resume to learn more about [phylogeny inference with `MrBayes`](../01_MrBayes/README.md)!
