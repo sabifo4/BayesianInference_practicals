@@ -1,4 +1,4 @@
-# Bayesian phylogeny inference with `MrBayes``
+# Bayesian phylogeny inference with `MrBayes`
 
 For this tutorial, we assume that you have already installed `MrBayes` on your PC or that, alternatively, you will be using the one installed on the cluster. If you want to use this program on your PC but have had issues with its installation, please follow the instructions on their [GitHub repository](https://github.com/NBISweden/MrBayes).
 
