@@ -1,6 +1,6 @@
 # Bayesian inference in R
 
-> **DISCLAIMER**: This tutorial is an adaption of the [`mcmc.K80.R` R script](https://github.com/mariodosreis/Bayesian_tutorial/blob/master/K80/mcmc.K80.R), part of the [`Bayesian_tutorial` repository](https://github.com/mariodosreis/Bayesian_tutorial) developed by Fabricia F. Nascimento ([@thednainus](https://github.com/thednainus)), Mario dos Reis ([@mariodosreis](https://github.com/mariodosreis)), and Ziheng Yang ([@abacus-gene](https://github.com/abacus-gene)). This tutorial is supposed to be run alongside their paper ["A biologist's guide to Bayesian phylogenetic analysis", (Nascimento et al., 2017)](http://rdcu.be/v4jM)
+> **DISCLAIMER**: This tutorial is an adaption of the [`mcmc.K80.R` R script](https://github.com/mariodosreis/Bayesian_tutorial/blob/master/K80/mcmc.K80.R), part of the [`Bayesian_tutorial` repository](https://github.com/mariodosreis/Bayesian_tutorial) developed by **Fabricia F. Nascimento** ([@thednainus](https://github.com/thednainus)), **Mario dos Reis** ([@mariodosreis](https://github.com/mariodosreis)), and **Ziheng Yang** ([@abacus-gene](https://github.com/abacus-gene)). This tutorial is supposed to be run alongside their paper ["A biologist's guide to Bayesian phylogenetic analysis", (Nascimento et al., 2017)](http://rdcu.be/v4jM)
 
 ## PART 1: Bayesian inference overview
 
