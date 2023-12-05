@@ -1,5 +1,7 @@
 # Bayesian inference in R
 
+> **DISCLAIMER**: This tutorial is an adaption from the [`Bayesian_tutorial` repository](https://github.com/mariodosreis/Bayesian_tutorial) written by Fabricia F. Nascimento, Mario dos Reis and Ziheng Yang for their paper [A biologist's guide to Bayesian phylogenetic analysis](http://rdcu.be/v4jM)
+
 ## PART 1: Bayesian inference overview
 
 ### Introduction to the dataset
