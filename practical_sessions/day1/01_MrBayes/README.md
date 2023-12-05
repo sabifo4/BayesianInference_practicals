@@ -1,6 +1,6 @@
 # Bayesian phylogeny inference with `MrBayes`
 
-For this tutorial, we assume that you have already installed `MrBayes` on your PC or that, alternatively, you will be using the one installed on the cluster. If you want to use this program on your PC but have had issues with its installation, please follow the instructions on their [GitHub repository](https://github.com/NBISweden/MrBayes).
+For this tutorial, we assume that you have already installed `MrBayes` ([Ronquist et al., 202012](https://academic.oup.com/sysbio/article/61/3/539/1674894)) on your PC or that, alternatively, you will be using the cluster, where this program is already installed. If you want to install `MrBayes` on your PC, please follow the instructions on their [GitHub repository](https://github.com/NBISweden/MrBayes).
 
 We will divide this practical session into the following sections:
 
@@ -11,6 +11,8 @@ We will divide this practical session into the following sections:
 * _ADDITIONAL EXERCISE IF TIME ALLOWS_: Evaluating the effect that using different models can have on posterior parameter estimates.
 
 Now... Let's get started!
+
+> **DISCLAIMER**: The dataset you will analyse during this practical session is part of a `MrBayes` practical that was run during the [Computational Molecular Evolution course](https://coursesandconferences.wellcomeconnectingscience.org/event/computational-molecular-evolution-20240518/) I attended in 2017. I have followed [the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf) to write this tutorial, which is adapted to a specific example dataset. Nervertheless, note that you will always find more details about the software and other settings [in the main documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf) and [the GitHub repository where the program is hosted](https://github.com/NBISweden/MrBayes).
 
 ## 1. Getting familiar with the NEXUS format
 
@@ -43,38 +45,38 @@ Once we have defined our input alignment in NEXUS format, we can generate the co
 * `charset`: this command is used to specify different datasets that you want to analyse based on your pre-defined input alignment. For instance, you may have two genes which could be labelled with a specific tag and which number of nucleotide bases is defined. This command can also be useful if you decide to partition your dataset and give a specific tag to each alignment block.  The format followed is the following: `charset <name_set>=<start_pos>:<end_pos>`.
 * `partition`: this command uses the information you have passed to `charset` and the names you gave to each character set. The format followed is the following: `partition <name_partition> = <num_partitions>:<name_charset1>, ...,<name_chraset_n`. E.g.:
 
- ```text
- # Example 1: separate a concatenated alignment into two genes.
- # The first 500 nucleotides correspond to the first gene, the
- # other 500 to a second gene.
- charset gene1=1-500;   
- charset gene2=501-1000;
- partition by-gene=2: gene1, gene2;   
- ```
+  ```text
+  # Example 1: separate a concatenated alignment into two genes.
+  # The first 500 nucleotides correspond to the first gene, the
+  # other 500 to a second gene.
+  charset gene1=1-500;   
+  charset gene2=501-1000;
+  partition by-gene=2: gene1, gene2;   
+  ```
 
- ```text
- # Example 2: separate a concatenated alignment into two genes.
- # The first 500 nucleotides correspond to the first gene, the
- # other 500 to a second gene. In addition, separate each codon
- # position of the first gene
- charset gene1_cp1=1-500\3;   
- charset gene1_cp2=2-500\3;   
- charset gene1_cp3=3-500\3;   
- charset gene2=501-1000;
- partition by-codpos=2: gene1_cp1, gene1_cp2, gene1_cp3, gene2;   
- ```
+  ```text
+  # Example 2: separate a concatenated alignment into two genes.
+  # The first 500 nucleotides correspond to the first gene, the
+  # other 500 to a second gene. In addition, separate each codon
+  # position of the first gene
+  charset gene1_cp1=1-500\3;   
+  charset gene1_cp2=2-500\3;   
+  charset gene1_cp3=3-500\3;   
+  charset gene2=501-1000;
+  partition by-codpos=2: gene1_cp1, gene1_cp2, gene1_cp3, gene2;   
+  ```
 
- More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
+  More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
 
 * `set`: this command is to be used if you have used the `partition` command as it "sets up" what you previously defined.
 * `lset`: this command sets the parameters of the likelihood model. There are different options this command can take, but we will focus on `nst`, `applyto`, and `rates`. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
-* `prset`: use this command to set the priors for the phylogenetic model you want to use. There are many options that you can pass to this command, but we will focus on `statefreqpr`, `shapepr`, and `revmatpr`. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
-* `unlink`: this command is to be used if you have used the `partition` command. As the name of this command says, it will "unlink" model parameters across the data partitions you have defined. You can add type `all` or the specific name of the partition/s for which you want to unlink the model parameters. By default, if the same parameter applies to different partitions and if this parameter has the same prior, `MrBayes` will use a single value for this parameter. If you want to use different parameter values for each partition you have established, then you need to use this command: it will "unlink" the model parameters so a specific value will be inferred for each partition. If you use the command `link` instead of `unlink`, the opposite will occur. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
-* `mcmc`: this command is used to set up and start the MCMC analysis. There are different options that you can pass to this command, but we will focus on `seed`, `ngen`, `nruns`, `nchains` (default is 4, 1 cold chain and 3 heated chains), `printfreq`, `samplefreq`, `diagnfreq`, `diagnstat`, `savebrlens`, and `filename`. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
+* `prset`: use this command to set the priors for the phylogenetic model you want to use. This command enables various options, but we will focus on `statefreqpr`, `shapepr`, and `revmatpr`. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
+* `unlink`: this command is to be used when you enable the `partition` command. As the name of this command says, it will "unlink" model parameters across the data partitions you have defined. You can type `all` or the specific name of the partition/s for which you want to unlink the model parameters. By default, if the same parameter applies to different partitions and if this parameter has the same prior, `MrBayes` will use a single value for this parameter. If you want to use different parameter values for each partition you have established, then you need to use this command to "unlink" the model parameters, and specific parameter values will be inferred for each partition. If you use the command `link` instead of `unlink`, the opposite will occur. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
+* `mcmc`: this command is used to set up and start the MCMC analysis. There are different options this command can activate, but we will focus on `seed`, `ngen`, `nruns`, `nchains` (default is 4, 1 cold chain and 3 heated chains), `printfreq`, `samplefreq`, `diagnfreq`, `diagnstat`, `savebrlens`, and `filename`. More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
 
 **BLOCK 3: Summarise trees and other model parameters (as many blocks as analysis you want to perform!)**:
 
-* `sumt`: this command produces summary statistics for the trees that have been sampled during the MCMC. You can specify the file name (`filename`) where you want the output to be written. By default, the burnin is established to be 25% of the samples collected (you could modify this if required). More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
+* `sumt`: this command produces summary statistics for the trees that have been sampled during the MCMC. You can specify the file name (`filename`) where you want the output to be written. By default, the burnin is established to be 25% of the samples collected (you could modify this, if required). More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
 * `sump`: this command prints the values that have been sampled for the model parameters during the MCMC. You can specify the file name (`filename`) where you want the output to be written. By default, the burnin is established to be 25% of the samples collected (you could modify this if required). More details [in the `MrBayes` documentation](https://github.com/NBISweden/MrBayes/blob/develop/doc/manual/Manual_MrBayes_v3.2.pdf).
 
 **BLOCK 4: Stop `MrBayes` and end of nexus file**:
@@ -84,16 +86,21 @@ Once we have defined our input alignment in NEXUS format, we can generate the co
 
 ## 2. Run `MrBayes`
 
-Now, we are ready to run `MrBayes`!
+Now, we would be ready to run `MrBayes`! To save computational power, however, there is no need for you to run this analysis! You can download the results that have already been generated so that you can later inspect the MCMC output. We will also learn how to use `Tracer` and `FigTree` to analyse and visualise the results you have obtained!
 
->> If you are a Windows user and want to use the executable file, you may want to copy this file in the directory where you have saved the control and alignment files in NEXUS format. Once saved in the same location, you will be able to execute `MrBayes` there. If you are running
-`MrBayes` from the command line and you have properly installed the software, you can open a terminal from the directory where you have your NEXUS files and type `mb` to start `MrBayes`. In both cases, you should see the following screen:
+```sh
+# Run from `01_MrBayes/analysis
+tar -xvf mrbayes_output.tar.gz
+#> You will now see many output files corresponding
+#> to the different analyses we pre-defined in the
+#> control file!
+```
+
+>> If you are a Windows user and want to use the executable file for future analyses, you may want to copy this file in the directory where you have saved the control and alignment files in NEXUS format. Once saved in the same location, you will be able to execute `MrBayes` there. If you are running `MrBayes` from the command line and you have properly installed the software, you can open a terminal from the directory where you have your NEXUS files and type `mb` to start `MrBayes`. In both cases, you should see the following screen:
 
 <p align="center">
   <img width="700" height="400" src="../../../figs/figs_MrBayes/fig1.png">
 </p>
-
-Once this analysis finishes, we will learn how to use `Tracer` and `FigTree` to analyse and visualise the results you have obtained!
 
 ## 3. Analysing the `MrBayes` MCMC output
 
@@ -132,9 +139,9 @@ alias tracer1.7.1='java -jar <path_to_Tracer>/Tracer_v1.7.1/lib/tracer.jar'
 tracer1.7.1
 ```
 
-By now, we expect the first analysis has finished so you can use the corresponding output file (i.e., the file which extension is `.p`) to analyse the sampled values gathered during the MCMC for each model parameter. If your runs have not finished, we will share with you an output file we obtained when running this analysis so you can proceed with the next tasks.
+You can open the output files that have saved the samples collected during the MCMC for all model parameters (i.e., files which extension is `.p`).
 
-Once you have started `Tracer`, you can select the `Import Trace File...` option from the `File` menu. Then, select the file with extension `.p` that was output by `MrBayes` to load it onto `Tracer`.
+Once you have launched `Tracer`, you can select the `Import Trace File...` option from the `File` menu. Then, select the file with extension `.p` that was output by `MrBayes` to load it onto `Tracer`. Alternatively, you can also drag the file onto the `Tracer` icon if you are on your PC.
 
 We will go through the most important features of `Tracer` together but, in general, we will focus on the effective sample sizes (ESSs) calculated for each of the model parameters, the frequency plot of the samples, and the trace plots.
 
@@ -143,7 +150,7 @@ We will go through the most important features of `Tracer` together but, in gene
 > * Do you think we need to run the chain longer?
 > * Is the ESS enough for the model parameters?
 > * How efficient is the chain?
-> * Do we need to specify a specific value for the burn-in phase?
+> * Do we need to increase the number of iterations that are part of the burn-in phase?
 
 ## 4. Viewing the annotated tree
 
@@ -182,11 +189,10 @@ alias figtree1.4.4='java -jar <path_to_Tracer>/FigTree_v1.4.4/lib/figtree.jar'
 figtree1.4.4
 ```
 
-Now, you can open in `FigTree` the file with the consensus tree that `MrBayes` has output, i.e., file name that ends with `con.tre`. The tree will be displayed in the `FigTree` window. On the left hand side of the window you can find the options and settings which control how the tree is displayed. We will see together the main options you can use to display the tree.
+Now, you can launch `FigTree` to view the file with the consensus tree that `MrBayes` has output, i.e., file names that end with `con.tre`. The tree will be displayed in the `FigTree` window. On the left hand side, you can find the options and settings which control how the tree is displayed. We will see together the main options you can use to display the tree.
 
 ---
 
-## 5. ADDITIONAL EXERCISE **ONLY** IF YOU HAVE FINISHED EARLIER
+## 5. ADDITIONAL EXERCISE **ONLY** IF WE HAVE FINISHED EARLIER
 
-come up with 2 different models under which you could run `MrBayes` and analyse this example data set. Once you have decided which two models you
-are going to run in `MrBayes`, set up your control file in NEXUS format and start the Bayesian inference analysis. You can then compare the results you obtain with those we have run together to see which one fits the data better.
+Come up with 2 different models under which you could run `MrBayes` and analyse the example data set we have shown above. Once you have decided which models you are going to run in `MrBayes`, set up your control file in NEXUS format and start the Bayesian inference analysis. You can then compare the results you obtain with those we have run together to see which one fits the data better.

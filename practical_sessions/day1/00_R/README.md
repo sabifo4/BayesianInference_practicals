@@ -7,7 +7,7 @@
 The data that we will be using for this practical session is the 12S rRNA alignment of human and orangutan, which consists of 948 base pairs and 90 differences (i.e., 84 transitions {"purine<->purine" or "pyrimidine<->pyrimidine"} and 6 transversions {"purine<->pyrimidine"};
 purines are A and G and pyrimidines C and T):
 
-> **Table 1**. Numbers and frequencies (in parantheses) of sites for the 16 site configurations (patterns) in human and orangutan mitochondrial 12s rRNA genes. This table is based on Table 1.3, page 7 in [Yang (2014)](http://abacus.gene.ucl.ac.uk/MESA/).
+> **Table 1**. Numbers and frequencies (in parantheses) of sites for the 16 site configurations (patterns) in human and orangutan mitochondrial 12s rRNA genes. This table is based on Table 1.3, page 7 in [Yang 2014](http://abacus.gene.ucl.ac.uk/MESA/).
 
 | Orangutan (below) \ Human (right)         | T               | C             | A              | G              | Sum ($\pi_{i}$)|
 |-------------------------------------------|-----------------|---------------|----------------|----------------|----------------|
@@ -20,7 +20,7 @@ purines are A and G and pyrimidines C and T):
 >> *Note*: GenBank accession numbers for the human and orangutan sequences are `D38112` and `NC_001646`, respectively ([Horai et al. (1995)](https://pubmed.ncbi.nlm.nih.gov/7530363/)). There are 954 sites in the alignment, but six sites involve alignment gaps and are removed, leaving 948 sites in each sequence. The average base frequencies in the two sequences are 0.2184 (T), 0.2605 (C), 0.3265 (A), and 0.1946 (G).
 
 We are going to use the [R programming language](https://cran.r-project.org/) to load, parse, and analyse the data. You can also run all the commands we will go through in this tutorial from the graphical interface [RStudio](https://www.rstudio.com/products/rstudio/download/).
-If you are unfamiliar with the installation of both these software, you can follow [this step-by-step tutorial](https://github.com/sabifo4/RnBash/tree/master/R_installation) for a detailed explanation of each task that you are going to carry out. Note that you can also find all the code shown and explained in this file in [this R script](Practical_1.R).
+If you have not yet installed R or RStudio, you can follow [this step-by-step tutorial](https://github.com/sabifo4/RnBash/tree/master/R_installation) for a detailed explanation of what you need to do. You can find all the code shown and explained in this `README.md` file both in an [R script](Practical_1.R) and in an [R markdown script](Practical_1.Rmd) -- use the file that best aligns with your working style! :)
 
 ### Analysing the data
 
@@ -70,7 +70,7 @@ k80.lnL <- function( d, k, n = 948, ns = 84, nv = 6 ) {
 }
 ```
 
-Once we have defined our log-likelihood function, we can now decide which values we want to use for $d$ and $\kappa$ (i.e., those values that we will input in the R function that we have just defined to calculate the log-likelihood). We are going to select 100 values for $\kappa$ that range from 0 to 100 and 100 values for $d$ that range from 0 to 0.3. Then, we can create a data frame that includes all possible combinations of the values selected for $d$ and $\kappa$:
+Once we have defined our log-likelihood function, we can now decide which values we want to use for $d$ and $\kappa$ (i.e., values that we will input in the R function that we have just defined to calculate the log-likelihood). We are going to select 100 values for $\kappa$ that range from 0 to 100 and 100 values for $d$ that range from 0 to 0.3. Then, we can create a data frame that includes all possible combinations of the values selected for $d$ and $\kappa$:
 
 ```r
 # Dimension for the plot
@@ -82,7 +82,7 @@ k.v <- seq( from = 0, to = 100, len = dim )
 dk  <- expand.grid( d = d.v, k = k.v )
 ```
 
-The resulting data frame object has 10,000 rows and 2 columns, which means that 10,000 combinations for $d$ and $\kappa$ values have been recorded in this object.
+The resulting data frame object `dk` has 10,000 rows and 2 columns, which means that 10,000 combinations for $d$ and $\kappa$ values have been recorded in this object.
 
 Now, we can use this object to go through the matchings pairs of $d$ and $\kappa$ values so that we can compute the corresponding log-likelihood values with the `k80.lnL()` function previously defined. Last, we will save the output log-likelihood values in a matrix (i.e., object `lnL` below), which we will then transform into likelihood values scaled to 1:
 

@@ -9,17 +9,13 @@ rm( list = ls( ) )
 # Option 1)
 # You can type the path to the directory 
 # where you have saved this R script.
-# If you saved it under "~/Workshop/Day3",
-# then, you should uncomment the commands in
-# lines 17 and 18 - please, modify according to
-# your path!
+# E.g.:
 #
-# wd <- "~/Workshop/Day3"
+# wd <- "~/Workshop/BayesianInference/R"
 # setwd( wd )
 #
 # Option 2)
-# You can leave the previous lines commented and
-# find your working directory with the next
+# You can find your working directory with the next
 # commands. If you are not going to use this
 # option and prefer option 1), do not run the
 # following commands or just comment them:
@@ -36,12 +32,12 @@ setwd( wd )
 #
 # Option 3)
 # Alternatively, you can install a package that
-# automatically find the path to this R script.
-# You can comment line 42 if you already have
-# the `rstudioapi` package installed
+# automatically finds the path to this R script.
+# You can comment line 38 if you have already
+# installed the `rstudioapi` package
 install.packages( "rstudioapi" )
 library( rstudioapi ) 
-# The command in line 47 will get the path to this
+# The command in line 43 will get the path to this
 # R script and will assign it to the variable
 # `path_to_file`
 path_to_file <- getActiveDocumentContext()$path 
@@ -50,7 +46,7 @@ path_to_file <- getActiveDocumentContext()$path
 # working directory
 wd      <- paste( dirname( path_to_file ), "/", sep = "" )
 wd.name <- dirname( path_to_file )
-# Last, we use the command in line 56 to set
+# Last, we use the command in line 52 to set
 # the working directory to the path saved in
 # object `wd`
 setwd( wd )
@@ -63,7 +59,7 @@ setwd( wd )
 # Example data from Table 1.3, p.7 of Yang (2014), Molecular Evolution:
 # A Statistical Approach. Oxford University Press.
 
-# 1. Define data variables.
+# 1. Define data variables
 # Length of alignment in bp
 n  <- 948
 # Total number of transitions (23+30+10+21)
@@ -71,8 +67,8 @@ ns <- 84
 # Total number of transversions (1+0+2+0+2+1+0+0)
 nv <- 6
 
-# 2. Define log-likelihood function, f(D|d,k).
-#    This uses Kimura's (1980) substitution model. See p.8 in Yang (2014).
+# 2. Define log-likelihood function, f(D|d,k)
+#    This function uses Kimura's (1980) substitution model -- see p.8 in Yang (2014)
 #
 # Arguments:
 #
@@ -94,7 +90,7 @@ k80.lnL <- function( d, k, n = 948, ns = 84, nv = 6 ) {
 
 }
 
-# 3. Define variables to plot.
+# 3. Define variables to plot
 # Dimension for the plot
 dim <- 100
 # Vector of d values
@@ -103,7 +99,7 @@ d.v <- seq( from = 0, to = 0.3, len = dim )
 k.v <- seq( from = 0, to = 100, len = dim )
 dk  <- expand.grid( d = d.v, k = k.v )
 
-# We can compute the likelihood surface, f(D|d,k), for 
+# We can compute the log-likelihood surface, f(D|d,k), for 
 # each possible combination of d and k that are saved
 # in object dk
 lnL <- matrix( k80.lnL( d = dk$d, k = dk$k ), ncol = dim )
@@ -119,23 +115,23 @@ Pri <- matrix( dgamma( x = dk$d, shape = 2, rate = 20 ) *
                ncol = dim )
 Pos <- Pri * L
 
-# 4. Plot prior, likelihood, and unscaled posterior surfaces.
-#    We want one row and three columns.
+# 4. Plot prior, likelihood, and unscaled posterior surfaces
+#    We want one row and three columns
 par( mfrow = c( 1, 3 ) )
-# Prior surface. Note that the `contour()` function creates a contour plot.
+# Prior surface. Note that the `contour()` function creates a contour plot
 image( x = d.v, y = k.v, z = -Pri, las = 1, col = heat.colors( 50 ),
        main = "Prior", xlab = "distance, d",
        ylab = "kappa, k", cex.main = 2.0,
        cex.lab = 1.5, cex.axis = 1.5 )
 contour( x = d.v, y = k.v, z = Pri, nlev=10, drawlab = FALSE, add = TRUE )
-# Likelihood surface + contour plot.
+# Likelihood surface + contour plot
 image( x = d.v, y = k.v, z = -L, las = 1, col = heat.colors( 50 ),
        main = "Likelihood", xlab = "distance, d",
        ylab = "kappa, k", cex.main = 2.0,
        cex.lab = 1.5, cex.axis = 1.5 )
 contour( x = d.v, y = k.v, z = L, nlev = 10,
          drawlab = FALSE, add = TRUE)
-# Unscaled posterior surface + contour plot.
+# Unscaled posterior surface + contour plot
 image( x = d.v, y = k.v, z = -Pos, las = 1, col = heat.colors( 50 ),
        main = "Posterior", xlab = "distance, d",
        ylab = "kappa, k", cex.main = 2.0,
@@ -162,7 +158,7 @@ contour( x = d.v, y = k.v, z = Pos, nlev = 10,
 #   k     Numeric, value for parameter kappa.
 #   n     Numeric, length of the alignment. Default: 948.
 #   ns    Numeric, total number of transitions. Default: 84.
-#   nv    Numeric, total number of transcersions. Default: 6.
+#   nv    Numeric, total number of transversions. Default: 6.
 #   a.d.  Numeric, alpha value of the Gamma distribution that works as a prior
 #         for the distance (d). Default: 2.
 #   b.d.  Numeric, beta value pf the Gamma distribution that works as a prior
@@ -216,7 +212,7 @@ mcmcf <- function( init.d, init.k, N, w.d, w.k ) {
   sample.d <- sample.k <- numeric( N+1 )
 
   # STEP 1: Set initial parameter values to be used during the first
-  #         iteration of the MCMC.
+  #         iteration of the MCMC
   # 1.1. Get initial values for parameters k and d. Save these values
   #      in vectors sample.d and sample.k
   d <- init.d;  sample.d[1] <- init.d
@@ -230,9 +226,9 @@ mcmcf <- function( init.d, init.k, N, w.d, w.k ) {
   # 1.4. Start MCMC, which will run for N iterations
   for ( i in 1:N ){
 
-    # STEP 2: Propose a new state d*.
-    # We use a uniform sliding window of width w with reflection
-    # to propose new values d* and k*
+    # STEP 2: Propose a new state d*
+    #         We use a uniform sliding window of width w with reflection
+    #         to propose new values d* and k*
     # 2.1. Propose d* and accept/reject the proposal
     dprop <- d + runif( n = 1, min = -w.d/2, max = w.d/2 )
     # 2.2. Reflect if dprop is negative
@@ -250,7 +246,7 @@ mcmcf <- function( init.d, init.k, N, w.d, w.k ) {
       acc.d  <- acc.d + 1
     }
 
-    # STEP 4: Repeat steps 2-3 to propose a new state k*.
+    # STEP 4: Repeat steps 2-3 to propose a new state k*
     # 4.1. Propose k* and accept/reject the proposal
     kprop <- k + runif( n = 1, min = -w.k/2, max = w.k/2 )
     # 4.2. Reflect if kprop is negative
@@ -290,19 +286,21 @@ mcmcf <- function( init.d, init.k, N, w.d, w.k ) {
 # run this tutorial
 set.seed( 12345 )
 
-# 3. Test run-time.
+# 3. Test run-time
 system.time( mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                     w.d = .12, w.k = 180 ) )
 # With PC i7-8750H CPU, 16.0GB RAM, 2.20GHz,
 # this MCMC takes ~0.2s to finish
 
-
-
-# 4. Run again and save MCMC output.
+# 4. Run again and save MCMC output
 dk.mcmc <- mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                   w.d = .12, w.k = 180 )
 
-# 5. Plot traces of the values sampled for each parameter.
+############################
+# PART 3: MCMC diagnostics #
+############################
+# [[ TRACE PLOTS ]] #
+# 1. Plot traces of the values sampled for each parameter
 par( mfrow = c( 1,3 ) )
 # Plot trace for parameter d
 plot( x = dk.mcmc$d, ty = 'l', xlab = "Iteration",
@@ -314,10 +312,7 @@ plot( x = dk.mcmc$k, ty = 'l', xlab = "Iteration",
 plot( x = dk.mcmc$d, y = dk.mcmc$k, pch = '.', xlab = "d",
       ylab = "k", main = "Joint of d and k" )
 
-
-########################################
-# PART 3: Efficiency of the MCMC chain #
-########################################
+# [[ AUTOCORRELATION FUNCTION (ACF) PLOTS ]] #
 # Values sampled in an MCMC chain are autocorrelated because new states
 # are either the previous state or a modification of it.
 # The efficiency of an MCMC chain is closely related to the autocorrelation.
@@ -328,7 +323,7 @@ plot( x = dk.mcmc$d, y = dk.mcmc$k, pch = '.', xlab = "d",
 #                  eff = 1 / (1 + 2(r1 + r2 + r3 + ...))
 # where r_{i} is the correlation for lag i.
 
-# 1. Run a very long chain to calculate efficiency.
+# 1. Run a very long chain to calculate efficiency
 #    NOTE: With PC i7-8750H CPU, 16.0GB RAM, 2.20GHz,
 #          the MCMC takes ~13s to finish with the settings specified in
 #          the function below
@@ -340,45 +335,51 @@ par( mfrow = c( 1,2 ) )
 acf( x = dk.mcmc2$d )
 acf( x = dk.mcmc2$k )
 
-# 3. Define efficiency function
+# [[ CHAIN EFFICIENCY ]] #
+# Apart from calculating and plotting the ACF, we can also 
+# calculate chain efficiency. For this purpose, we use the 
+# following function:
+
+# 1. Define efficiency function
 #
 # Arguments:
 #  acf  Numeric, autocorrelation value
 eff <- function( acf ) 1 / ( 1 + 2 * sum( acf$acf[-1] ) )
 
-# 4. Compute efficiency for each parameter when running the MCMC
+# 2. Compute efficiency for each parameter when running the MCMC
 #    with the parameter values set above:
 #       mcmcf( init.d = 0.2, init.k = 20, N = 1e6, w.d = .12, w.k = 180 )
 eff( acf = acf( dk.mcmc2$d ) )
 eff( acf = acf( dk.mcmc2$k ) )
 # The efficienciy values are roughly 22% and 20% for d and k respectively
 
-# 5. Now, to illustrate inefficient chains, we will run our MCMC again by using
-#    a proposal density with a too large step size for d, and another with a
-#    too small step size for k if compared to the much more optimal values
-#    used before.
+# [[ TIME TO PRACTICE ]] #
+# Now, to illustrate inefficient chains, we will run our MCMC again by using
+# a proposal density with a too large step size for d, and another with a
+# too small step size for k if compared to the much more optimal values
+# used before:
 dk.mcmc3 <- mcmcf( init.d = 0.2, init.k = 20, N = 1e4,
                    w.d = 3, w.k = 5 )
 
-# 6. Plot traces for each parameter. Note that, because proposal width for d
+# 1. Plot traces for each parameter. Note that, because proposal width for d
 #    is too large, chain gets stuck at same values of d. On the other hand,
-#    proposal width for k is too small, so chain moves slowly.
+#    proposal width for k is too small, so chain moves slowly
 par( mfrow = c( 1,2 ) )
 plot( x = dk.mcmc3$d, ty = 'l', main = "Trace of d", cex.main = 2.0,
       cex.lab = 1.5, cex.axis = 1.5, ylab = "d" )
 plot( x = dk.mcmc3$k, ty = 'l', main = "Trace of k", cex.main = 2.0,
       cex.lab = 1.5, cex.axis = 1.5, ylab = "k" )
 
-# 7. Now, we run the chain longer but keep the same starting values for the
-#    rest of the parameters. Then, we compute the chain efficiency for each
-#    parameter.
+# Now, we run the chain longer but keep the same starting values for the
+# rest of the parameters. Then, we compute the chain efficiency for each
+# parameter:
 dk.mcmc4 <- mcmcf( init.d = 0.2, init.k = 20, N = 1e6,
                    w.d = 3, w.k = 5 )
 eff( acf = acf( dk.mcmc4$d, lag.max = 2e3 ) )
 eff( acf = acf( dk.mcmc4$k, lag.max = 2e3 ) )
 # Efficiency values are roughly 1.5% for d and 0.35% for k
 
-# 8. Plot the traces for efficient (part 2) and inefficient chains.
+# 1. Plot the traces for efficient (part 2) and inefficient chains
 par( mfrow = c( 2,2 ) )
 plot( dk.mcmc$d, ty = 'l', las = 1, ylim = c( .05,.2 ),
       main = "Trace of d, efficient chain", xlab = '',
@@ -394,27 +395,21 @@ plot( dk.mcmc3$k, ty = 'l', las = 1, ylim = c( 0,100 ),
       main = "Trace of k, inefficient chain",
       xlab = '', ylab = '', cex.main = 2.0, cex.lab = 1.5 )
 
-
-####################################
-# PART 4: Checking for convergence #
-####################################
-# We now illustrate the concept of burn-in.
+# We will now illustrate the concept of burn-in.
 # We will run a chain with a high starting value,
-# and another with a low starting value.
-
-# 1. Run MCMCs with high/low starting values for parameters d and k.
+# and another with a low starting value for parameters d and k.
 dk.mcmc.l <- mcmcf( init.d = 0.01, init.k = 20, N = 1e4,
                     w.d = .12, w.k = 180 )
 dk.mcmc.h <- mcmcf( init.d = 0.4, init.k = 20, N = 1e4,
                     w.d = .12, w.k = 180 )
 
-# 2. Compute man and sd of d.
+# 1. Compute man and sd of d.
 # We use the low chain to calculate the mean and sd of d, but we
 # could also have used the high chain
 mean.d <- mean( dk.mcmc.l$d )
 sd.d   <- sd( dk.mcmc.l$d )
 
-# 3. Plot the chains
+# 2. Plot the chains
 plot( dk.mcmc.l$d, xlim = c( 1,200 ), ylim = c( 0,0.4 ), ty = "l" )
 lines( dk.mcmc.h$d, col = "red" )
 # Plot a horizontal dashed line to indicate (approximately)
@@ -425,15 +420,15 @@ abline( h = mean.d + 2 * c( -sd.d, sd.d ), lty = 2 )
 # within the dashed lines). The area before it reaches stationarity is the
 # burn-in.
 
-# 4. Run an efficient chain (i.e., good proposal step sizes)
+# Last, let's compare chain efficiency.
+# Run an efficient chain (i.e., good proposal step sizes)
 dk.mcmc.b <- mcmcf( init.d = 0.05, init.k = 5, N = 1e4,
                     w.d = .12, w.k = 180 )
-
-# 5. Run an inefficient chain (i.e., bad proposal step sizes)
+# Run an inefficient chain (i.e., bad proposal step sizes)
 dk.mcmc3.b <- mcmcf( init.d  = 0.05, init.k = 5, N = 1e4,
                      w.d = 3, w.k = 5 )
 
-# 6. Plot and compare histograms
+# 1. Plot and compare histograms
 # Set breaking points for the plot
 bks <- seq( from = 0, to = 150, by = 1 )
 # Start plotting
@@ -449,7 +444,7 @@ hist( x = dk.mcmc3.b$k, prob=TRUE, breaks=bks, border=NA,
 hist( x = dk.mcmc3$k, prob=TRUE, breaks=bks, border=NA,
       col=rgb(.5, .5, .5, .5), add=TRUE)
 
-# 7. Calculate the posterior means and s.d for each chain.
+# 2. Calculate the posterior means and s.d for each chain
 # Compute means for efficient chains (they are quite similar)
 mean( dk.mcmc$d ); mean( dk.mcmc.b$d )
 mean( dk.mcmc$k ); mean( dk.mcmc.b$k )
@@ -463,8 +458,8 @@ sqrt( 1/1e4 * var( dk.mcmc$k ) / 0.20 ) # roughly 0.2
 sqrt( 1/1e4 * var( dk.mcmc3$d ) / 0.015 ) # roughly 9.7e-4
 sqrt( 1/1e4 * var( dk.mcmc3$k ) / 0.003 ) # roughly 1.6
 
-# 8. Plot densities (smoothed histograms) for the efficient and
-#    inefficient chains.
+# 3. Plot densities (smoothed histograms) for the efficient and
+#    inefficient chains
 # Set value to scale the kernel densities for the MCMCs
 adj <- 1.5
 par( mfrow = c( 1,2 ) )
