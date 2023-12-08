@@ -1,6 +1,6 @@
 # Bayesian phylogeny inference with `MrBayes`
 
-For this tutorial, we assume that you have already installed `MrBayes` ([Ronquist et al., 202012](https://academic.oup.com/sysbio/article/61/3/539/1674894)) on your PC or that, alternatively, you will be using the cluster, where this program is already installed. If you want to install `MrBayes` on your PC, please follow the instructions on their [GitHub repository](https://github.com/NBISweden/MrBayes).
+For this tutorial, we assume that you have already installed `MrBayes` ([Ronquist et al., 2012](https://academic.oup.com/sysbio/article/61/3/539/1674894)) on your PC or that, alternatively, you will be using the cluster, where this program is already installed. If you want to install `MrBayes` on your PC, please follow the instructions on their [GitHub repository](https://github.com/NBISweden/MrBayes).
 
 We will divide this practical session into the following sections:
 
