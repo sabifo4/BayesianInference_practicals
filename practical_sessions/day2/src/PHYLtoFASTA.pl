@@ -37,7 +37,6 @@ my @aln1 = <INFILE1>;
 my $count = 0;
 my $lenseq = 0;
 my $species = "";
-my $species = "";
 my $seq = "";
 
 ## Loop over all the lines in input file 
@@ -49,11 +48,11 @@ foreach my $line (@aln1){
 	if( $line =~ /      / ){
 		$species = $line;
 		$seq = $line;
-		# Keep track of length
-		$lenseq = length($seq);
 		# Get taxon name and sequence
 		$species =~ s/      ..*//;
-		$seq =~ s/..*      //;
+		$seq =~ s/$species      //;
+                # Keep track of length
+		$lenseq = length($seq);
 		$count += 1;
 		print OUT2 "Taxa: ".$species."\t"."Length of sequence: ".$lenseq."\n";
 		print OUT ">".$species."\n".$seq."\n"
