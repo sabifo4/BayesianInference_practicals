@@ -85,7 +85,18 @@ printf "Generating job array for dir "$i" for both clocks, both sets of calibrat
 # arg4   Path to MCMCtree pipeline dir.
 # arg5   Command to execute MCMCtree. E.g. "mcmctree", "mcmctree_4.10.7", etc.
 # arg6   Number of MCMCs to run.
-# arg7   Type of calibration: "seccal" (secondary calibrations) or "fosscal" (fossil calibrations)
+# arg7   Type of calibration: "seccal" ("secondary" calibrations) or "fosscal" (fossil calibrations)
+#
+# -->
+# DISCLAIMER: Remember that we cannot use secondary calibrations as the data used
+# by Álvarez-Carretero et al. (2022, https://doi.org/10.1038/s41586-021-04341-1)
+# includes the same genes that we have in our phylogeny -- we would be using the
+# same data twice, which is causing problems with the likelihood calculation!
+# Nevertheless, we are just pretending that we can use the posterior times estimated
+# by Álvarez-Carretero et al., (2022) for the nodes that match those in our phylogeny
+# so that you could see an example of how you could set secondary calibrations with
+# --->
+#
 ./generate_job_MCMCtree.sh $i GBM 1 $home_dir/pipelines_MCMCtree mcmctree $num_chains seccal
 ./generate_job_MCMCtree.sh $i GBM 1 $home_dir/pipelines_MCMCtree mcmctree $num_chains fosscal
 ./generate_job_MCMCtree.sh $i GBM 1 $home_dir/pipelines_MCMCtree mcmctree $num_chains seccal
