@@ -219,7 +219,7 @@ cd ../fosscal
 ### 2.1. Setting the file structure
 
 We will now create a `sum_analyses` directory to analyse the `MCMCtree` output.
-First, we need to come back to the `01_analyses/01_MCMCtree` directory and run the following code snippet:
+First, we need to come back to the `01_PAML/01_MCMCtree` directory and run the following code snippet:
 
 ```sh
 # Run from `01_PAML/01_MCMCtree` dir on your local
@@ -383,7 +383,7 @@ rm sum_analyses_prior.tar.gz
 
 The next step is to plot the user-specified prior VS the effective prior. I have written the R script [`Check_priors_effVSuser.R`](scripts/Check_priors_effVSuser.R) to generate these plots. Once this script has finished, you will see that a new directory `plots/effVSuser` will have been created. Inside this directory, you will find one directory for each individual dataset with individual plots for each node. In addition, all these plots have been merged into a unique document as well (note: some plots may be too small to see for each node, hence why you will also generate individual plots).
 
-Now, once the MCMC diagnostics have finished, you can extract the final results when sampling from the posterior so that you can go through them in a much easier manner:
+Now, once the MCMC diagnostics have finished, you can extract the final results when sampling from the prior so that you can go through them in a much easier manner:
 
 ```sh
 # Run from `01_MCMCtree`
@@ -418,7 +418,7 @@ Now that we have verified that there are no issues between the user-specified pr
 # Go to directory `main/pipelines_MCMCtree/` dir on your local
 # PC and run the following commands. Please change directories until
 # you are there.
-## IMPORTANT: RUN ONLY THOSE COMMANDS THTA CORRESPOND TO THE ANALYSES
+## IMPORTANT: RUN ONLY THOSE COMMANDS THAT CORRESPOND TO THE ANALYSES
 ## YOUR GROUP IS RUNNING!
 chmod 775 */*/*/*sh
 cd conc/fosscal/GBM/
