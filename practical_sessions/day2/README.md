@@ -1,71 +1,55 @@
-# Bayesian timetree inference
+# Reproducible timetree inference analysis with PAML: a step-by-step tutorial
 
-**DISCLAIMER**: This tutorial is based on a computational program that I am working on at the moment, which I am still developing and is yet to be published. While some of the scripts/tools that you will find here have been validated and used in published research ([Álvarez-Carretero et al., 2022](https://doi.org/10.1038/s41586-021-04341-1)), I am actively implementing new features as part of the current workflow of this pipeline as well as developing new scripts/tools. In other words, the code is not stable and I am still validating the new features. If you want to use the tools that I have developed as part of this tutorial/pipeline, please first contact me at <a href="mailto:sandra.ac93@gmail.com"><b>sandra.ac93@gmail.com</b></a>. Thank you :)
+**DISCLAIMER**: This tutorial is based on a phylogenetics tool that I am working on at the moment, which I am still developing and is yet to be published. While some of the scripts/tools that you will find here have been validated and used in published research ([Álvarez-Carretero et al., 2022](https://doi.org/10.1038/s41586-021-04341-1)), I am actively implementing new features as part of the current workflow of this pipeline as well as developing new scripts/tools. In other words, the code is not stable and I am still validating the new features. If you want to use the tools that I have developed as part of this tutorial/pipeline, please first <a href="mailto:sandra.ac93@gmail.com"><b>contact me</b></a>. Thank you :)
 
-## Overview
+## Introduction
 
-During this practical session, we will use various in-house scripts and tools together with `BASEML` and `MCMCtree`, two programs that are part of the `PAML` software ([Yang 2007](https://pubmed.ncbi.nlm.nih.gov/17483113/)), to run a **Bayesian analysis for timetree inference** using a **node-dating approach** and an **approximation to the likelihood calculation** implemented in `MCMCtree` ([dos Reis and Yang, 2011](https://academic.oup.com/mbe/article/28/7/2161/1051613)) to speed up such analysis.
+### Reproducible tutorial
 
-Before you get started, let's look at the data that you have managed to collect so far:
+In this repository, you will find step-by-step guidelines for timetree inference with PAML under a reproducible environment. To that end, you will follow all the steps within a self-contained environment that follows a specific file structure. Consequently, every command and script that you run indeed relies on this file structure to ensure data reproducibility. Please note that basic bioinformatics skills regarding data handling and parsing are required when going through this tutorial. For analyses with PAML programs that do not require a pre-determined file structure, please read the next section on ["Quick start tutorial"](README.md#quick-start-tutorial--coming-soon)
 
-* [**Molecular alignment**](raw_data/aln_seq/baliphy/P1-max.fasta): alignments inferred with `BAli-Phy` ([Redelings, 2021](https://academic.oup.com/bioinformatics/article/37/18/3032/6156619)) using the CYTB sequences of 8 mammals downloaded from the NCBI web server. For more information on how this molecular alignment has been generated, you can always [read the step-by-step tutorial in the `raw_data` directory](raw_data/README.md). To make sure you have time to go through this tutorial, however, please do not go through this dataset assembly pipeline until the end of this session!
-* [**Set of calibrations #1**](00_data_formatting/calibs/Calib_converter_1.txt): calibrations based on the fossil record. More information about how they have been established later in the tutorial.
-* [**Set of calibrations #2**](00_data_formatting/calibs/Calib_converter_2.txt): we will contrain the age of the same nodes in set #1 but now based on the divergence times inferred by [Álvarez-Carretero et al., 2022](https://doi.org/10.1038/s41586-021-04341-1) using the Bayesian sequential-subtree (BSS) approach. More information about how they have been established later in the tutorial. Please note that this is just an example of how you could use secondary calibrations to calibrate your phylogeny but, strictly speaking, **what we are doing in this example is not incorrect**. The genes that we are using in our bear dataset were also used by [Álvarez-Carretero et al., 2022](https://doi.org/10.1038/s41586-021-04341-1), and so we would be using the same data twice (problems with the likelihood calculation!). In this example, we are going to pretend that we can use the posterior times estimated by [Álvarez-Carretero et al., 2022](https://doi.org/10.1038/s41586-021-04341-1) for the nodes that match those in our phylogeny so that you could see an example of how you could set secondary calibrations with your own datasets. Nevertheless, I just wanted to emphasise once more that this would not be correct with this example -- we are doing this just as a dummy example!
-* [**Phylogeny**](raw_data/aln_seq/baliphy/cytb_rooted_bl.tree): tree topology with branch lengths inferred with `BAli-Phy` ([Redelings, 2021](https://academic.oup.com/bioinformatics/article/37/18/3032/6156619)). For more information about how this phylogeny has been inferred, you can always [read the step-by-step tutorial in the `raw_data` directory](raw_data/README.md). To make sure you have time to go through this tutorial, however, please do not go through this dataset assembly pipeline until the end of this session!
+At the start of this tutorial, we assume that the user has already (1) collected their data, (2) inferred the corresponding gene/genome alignment/s, and (3) inferred the corresponding phylogeny/ies. We will focus on the following:
 
-Remember that, before proceeding with timetree inference, you need to get familiar with your dataset! For instance, you may ask yourselves questions such as "how were the data collected?", "how were the alignments generated?", or "how are the files going to be organised?". In this practical session, we are not going to address such questions as we will only have time to focus on the subsequent steps. Nevertheless, at the end of the session, you can always go through the step-by-step data assembly workflow available in the [`raw_data` directory](raw_data) to understand how the data were collected and processed. In addition, to learn more about the different steps that the phylogenomic workflow consists of, you may also want to read [Álvarez-Carretero & dos Reis, 2022](https://link.springer.com/chapter/10.1007/978-3-030-60181-2_13).
+1. Getting the data ready (i.e., correct format to run PAML programs).
+2. Setting a prior for the rates using R.
+3. Running `BASEML` to calculate the Hessian and the gradient so we can use the approximate likelihood implemented in `MCMCtree` for timetree inference.
+4. Using the estimated branch lengths, gradient, and Hessian for timetree inference with `MCMCtree`.
 
-### Goals
+Specific `README.md` files and scripts have been generated so that users can follow this tutorial regardless of their operating system:
 
-At the end of this practical session, you should...
+* `00_data_formatting`
+  * Linux and WSL users can follow the instructions detailed in the [`REAMDE.md` file](00_data_formatting/README.md).
+  * Mac OSX users can follow the instruction detailed in the [`REAMDE_MacOSX.md` file](00_data_formatting/README_MacOSX.md).
+* `01_PAML/00_BASEML`
+  * Linux and WSL users can follow the instructions detailed in the [`README.md` file](01_PAML/00_BASEML/README.md).
+  * Mac OSX users can follow the instructions detailed in the [`README_MacOSX.md` file](01_PAML/00_BASEML/README_MacOSX.md).
+  * Users that want to submit scripts to a High-Performance Computing server (SGE scheduler) can follow the instructions detailed in the [`README_HPC_SGE.md` file](01_PAML/00_BASEML/README_HPC_SGE.md).
+* `01_PAML/01_MCMCtree`
+  * Linux and WSL users can follow the instructions detailed in the [`README.md` file](01_PAML/01_MCMCtree/README.md).
+  * Mac OSX users can follow the instructions detailed in the [`README_MacOSX.md` file](01_PAML/01_MCMCtree/README_MacOSX.md).
+  * Users that want to submit scripts to a High-Performance Computing server (SGE scheduler) can follow the instructions detailed in the [`README_HPC_SGE.md` file](01_PAML/01_MCMCtree/README_HPC_SGE.md).
 
-* ... be mindful about how important it is to be familiar with your dataset before proceeding with timetree inference.
-* ... understand how to parse and format input data.
-* ... understand how to run `PAML` software for timetree inference analysis. E.g., specifying substitution models, selecting the most adequate priors according to your dataset, specifying MCMC settings, etc.
-* ... understand how to run MCMC diagnostics to confidently filter the chains that were run under each type of analysis and assess chain convergence.
-* ... be able to critically discuss the results you have obtained according to your prior hypotheses and the settings under which PAML programs have been executed.
+> **NOTE**: While not addressed in this tutorial, it is noteworthy that everyone needs to be familiar with their dataset/s before proceeding with timetree inference: how were the data collected? How were the alignments generated? How are the files going to be organised? Here, we just focus on the subsequent steps assuming that all the checks required for timetree and alignment inference have been carried out. For a summary on how to approach this data parsing process, however, we suggest reading [Álvarez-Carretero & dos Reis, 2022](https://link.springer.com/chapter/10.1007/978-3-030-60181-2_13).
 
-### Workflow
+### Quick Start tutorial
 
-The summary of the workflow that you will follow during this practical session is the following:
+> [[ COMING SOON! ]]
 
-* Parsing and formatting the input data required to run `PAML` software: files with the sequence alignment and a fixed tree topology.
-* Inferring the mean evolutionary rate to specify a sensible rate prior.
-* Running `PAML` software for timetree inference:
-  * Using various in-house pipelines to set up the working environment, the file structure, and the control files required to run `PAML` software.
-  * Running `BASEML` to calculate the gradient and the Hessian, which will be required by `MCMCtree` to enable the approximate likelihood calculation.
-  * Running `MCMCtree` with the approximate likelihood calculation enabled for timetree inference. We will run the following analyses to assess the impact that (i) different sets of calibrations, (ii) relaxed-clock models (i.e., autocorrelated-rates model or geometric Brownian diffusion model [[Thorne et al. 1998](http://www.ncbi.nlm.nih.gov/pubmed/9866200), [Yang and Rannala 2006](http://www.ncbi.nlm.nih.gov/pubmed/16177230)] and independent log-normal rate model [[Rannala and Yang 2007](http://www.ncbi.nlm.nih.gov/pubmed/17558967), [Lemey et al. 2010](http://www.ncbi.nlm.nih.gov/pubmed/20203288)]), and (ii) partitioning schemes (i.e., all codon positions or only the first and the second codon positions) can have on species divergence times estimation:
-    * Analysis 1
-      * **GBM_CAL1_ALLCP**: autocorrelated-rates model + set of calibrations #1 + all codon positions.
-      * **GBM_CAL2_ALLCP**: autocorrelated-rates model + set of calibrations #2 + all codon positions.
-    * Analysis 2
-      * **GBM_CAL1_12CP**: autocorrelated-rates model + set of calibrations #1 + 1st/2nd codon positions.
-      * **GBM_CAL2_12CP**: autocorrelated-rates model + set of calibrations #2 + 1st/2nd codon positions.
-    * Analysis 3
-      * * **ILN_CAL1_ALLCP**: independent-rates model + set of calibrations #2 + all codon positions.
-      * **ILN_CAL2_ALLCP**: independent-rates model + set of calibrations #2 + all codon positions.
-    * Analysis 4
-      * * **ILN_CAL1_12CP**: independent-rates model + set of calibrations #2 + 1st/2nd codon positions.
-      * **ILN_CAL2_12CP**: independent-rates model + set of calibrations #2 + 1st/2nd codon positions.
-* Running MCMC diagnostics for all the chains under each analysis.
-* General discussion.
+We will provide a [`Quick Start tutorial`](quick_start/README.md) that users can follow to run a simple analysis with PAML that does not rely on a specific file structure. This type of analysis is suitable for running small tests with your dataset when using PAML programs as well as for timetree inference with small datasets. Only basic bash scripting (e.g., changing directories, execute programs from the terminal) will be required to follow this tutorial.
 
-> **NOTE 1**: we will go through the first two steps together so that everyone starts the `PAML` analyses once all the details with regards to data formatting and the rate prior have been understood.
->
-> **NOTE 2**: to speed things up, not everyone will individually run the `MCMCtree` analyses on their own. We will have breakout rooms so that you can work in small groups to run a specific analysis.
->
-> **NOTE 3**: we will stop 15 minutes before the end of the practical session to discuss the results that you have obtained by that time. If you have not finished the analyses, please do not worry! I will share with you the results under the 4 different scenarios, and we can all have a general discussion about how different partitioning schemes and relaxed-clock models have affected the estimated divergence times in our bear phylogeny.
->
-> **NOTE 4**: for practical purposes, we are not using a phylogenomic dataset, but the workflow is equivalent to the one you are following today! The only difference would be the input alignment. Therefore, you would be able to use scripts and pipelines you are using today.
+For details on how to run PAML with phylogenomic datasets without relying on a specific file structure, you can visit the [`divtime` GitHub repository](https://github.com/mariodosreis/divtime) developed and maintained by [`@mariodosreis`](https://github.com/mariodosreis). This repository is supposed to be followed while reading the **protocol "Bayesian Molecular Clock Dating Using Genome-Scale Datasets**([dos Reis and Yang, 2019](https://link.springer.com/protocol/10.1007/978-1-4939-9074-0_10)).
 
-## Software
+> **NOTE**: If you want to use the various scripts provided in this repository (e.g., MCMC diagnostics) after following the tutorials aforementioned, you will need to modify them and adapt them to your environment given that they rely on a specific file structure.
 
-Before you start this practical session, please make sure you have the following software installed on your PCs:
+## Software requirements
 
-* **`PAML`**: you will be using the latest `PAML` release, v4.10.7, available from the [`PAML` GitHub repository](https://github.com/abacus-gene/paml). If you do not want to install the software from the source code, then follow (A). If you want to install `PAML` from the source code, then follow (B):
+Before you start this tutorial, please make sure you have the following software installed on your PCs:
 
-  * Installation (A): if you have problems installing `PAML` from the source code or you do not have the tools required to compile the source code, then you can [download the pre-compiled binaries available from the latest release by following this link](https://github.com/abacus-gene/paml/releases/tag/4.10.7). Please choose the pre-compiled binaries you need according to your OS (i.e., Windows, Mac OSX, Linux), download the corresponding compressed file and save it in your preferred directory. Then, after decompressing the file, please give executable permissions, export the path to this binary file so you can execute it from a terminal, and you should be ready to go!
-  * Installation (B): to install `PAML v4.10.7` from the source code, please follow the instructions given in the code snippet below:
+* **`PAML`** (required for both the "quick start" and the "reproducible" analyses): you will be using the latest `PAML` release ([at the time of writing, v4.10.7](https://github.com/abacus-gene/paml/releases/tag/4.10.7)), available from the [`PAML` GitHub repository](https://github.com/abacus-gene/paml). If you do not want to install the software from the source code, then follow (A). If you want to install `PAML` from the source code, then follow (B). If you have a Mac with M1/M2 chips, please follow (C):
+
+  * Installation (A): if you have problems installing `PAML` from the source code or you do not have the tools required to compile the source code, then you can [download the pre-compiled binaries available from the latest release by following this link](https://github.com/abacus-gene/paml/releases/tag/4.10.7). Please choose the pre-compiled binaries you need according to your OS, download the corresponding compressed file, and save it in your preferred directory. Then, after decompressing the file, please give executable permissions, export the path to this binary file so you can execute it from a terminal, and you should be ready to go!
+    > **Windows users**: we highly recommend you install the Windows Subsystem for Linux (i.e., WSL) on your PCs to properly follow this tutorial -- otherwise, you may experience problems with the Windows Command Prompt. Once you have the WSL installed, then you can download the binaries for Linux.
+  * Installation (B): to install `PAML` from the source code, please follow the instructions given in the code snippet below:
 
     ```sh
     # Clone to the `PAML` GitHub repository to get the latest `PAML` version
@@ -103,8 +87,11 @@ Before you start this practical session, please make sure you have the following
     ```
 
     Alternatively, you can edit this file using your preferred text editor (e.g., `vim`, `nano`, etc.).
+    > **Windows users**: we highly recommend you install the Windows Subsystem for Linux (i.e., WSL) on your PCs to properly follow this tutorial -- otherwise, you may experience problems with the Windows Command Prompt. Once you have the WSL installed, then download the source code and follow the instructions listed above.
 
-* **`R`** and **`RStudio`**: please download [R](https://cran.r-project.org/) and [RStudio](https://posit.co/download/rstudio-desktop/) as we will be using them throughout the practical. The packages we will be using should work with R versions that are either newer than or equal to v4.1.2. If you are a Windows user, please make sure that you have the correct version of `RTools` installed, which will allow you to install packages from the source code if required. For instance, if you have R v4.1.2, then installing `RTools4.0` shall be fine. If you have another R version installed on your PC, please check whether you need to install `RTools 4.2` or `RTools 4.3`. For more information on which version you should download, [please go to the CRAN website by following this link and download the version you need](https://cran.r-project.org/bin/windows/Rtools/).
+* Installation (C) for M1/M2 chips (Mac OSX): you will need to download the `dev` branch on the PAML GitHub repository and compile the binaries from the `dev` source code. Please [follow this link](https://github.com/abacus-gene/paml/tree/dev) and click the green button [`<> Code`] to start the download. You will see that a compressed file called `paml-dev.zip` will start to download. Once you decompress this file, you can go to directory `src` and follow the instructions in (B) to compile the binaries from the source code.
+
+* **`R`** and **`RStudio`** (required only for "reproducible" analyses): please download [R](https://cran.r-project.org/) and [RStudio](https://posit.co/download/rstudio-desktop/) as we will be using them throughout the practical. The packages we will be using should work with R versions that are either newer than or equal to v4.1.2. If you are a Windows user, please make sure that you have the correct version of `RTools` installed, which will allow you to install packages from the source code if required. For instance, if you have R v4.1.2, then installing `RTools4.0` shall be fine. If you have another R version installed on your PC, please check whether you need to install `RTools 4.2` or `RTools 4.3`. For more information on which version you should download, [please go to the CRAN website by following this link and download the version you need](https://cran.r-project.org/bin/windows/Rtools/).
 
     Before you proceed, however, please make sure that you install the following packages too:
 
@@ -121,15 +108,21 @@ Before you start this practical session, please make sure you have the following
     ## aforementioned.
     ```
 
-* **`FigTree`**: you can use this graphical interface to display tree topologies with/without branch lengths and with/without additional labels. You can then decide what you want to be displayed by selecting the buttons and options that you require for that to happen. You can [download the latest pre-compiled binaries, `FigTree v1.4.4`, from the `FigTree` GitHub repository](https://github.com/rambaut/figtree/releases).
+* **`FigTree`**: you can use this graphical interface to display tree topologies with/without branch lengths and with/without additional labels. You can then decide what you want to be displayed by selecting the buttons and options that you require for that to happen. You can [download the latest pre-compiled binaries, `FigTree v1.4.4` at the time of writing, from the `FigTree` GitHub repository](https://github.com/rambaut/figtree/releases).
 
-* **`Tracer`**: you can use this graphical interface to visually assess the MCMCs you have run during your analyses (e.g., chain efficiency, chain convergence, autocorrelation, etc.). You can [download the latest pre-compiled binaries, `Tracer v1.7.2`, from the `Tracer` GitHub repository](https://github.com/beast-dev/tracer/releases/tag/v1.7.2).
+* **`Tracer`**: you can use this graphical interface to visually assess the MCMCs you have run during your analyses (e.g., chain efficiency, chain convergence, autocorrelation, etc.). You can [download the latest pre-compiled binaries, `Tracer v1.7.2` at the time of writing, from the `Tracer` GitHub repository](https://github.com/beast-dev/tracer/releases/tag/v1.7.2).
 
-## Data analysis
+* **Visual Studio Code** (optional): for best experience with this tutorial, we highly recommend you install Visual Studio Code and run the tutorial from this IDE to keep everything tidy, organised, and self-contained. You can download it from [this website](https://code.visualstudio.com/). If you are new to VSC, you can check their webinars to learn about its various features and how to make the most out of it. You may also want to install the following extensions:
+  * Markdown PDF -- developer: yzane
+  * markdownlint -- developer: David Anson
+  * Spell Right -- developer: Bartosz Antosik
+  * vscode-pdf -- developer: tomoki1207
 
-If you have gone through the previous sections and have a clear understanding of the dataset you will be using, the workflow of the analyses you will be running, and have installed the required software to do so... Then you are ready to go!
+## Are you ready?
 
-You can start formatting the input data needed to infer the divergence times of our bear phylogeny [by following this link](00_data_formatting/README.md).
+If you have gone through the previous sections, have a clear understanding of the how this repository is organised, and have installed the required software... Then you are ready to go!
+
+You can start the tutorial by jumping to the [`00_data_formatting` directory](00_data_formatting), choose the `README.md` file that aligns with your OS, and...
 
 Happy timetree inference! :)
 
