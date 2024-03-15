@@ -61,7 +61,7 @@ load_dat <- function( mcmc, delcol = 3, perc = 0.975, def_samples = 20000,
   #print( test_len )
   #print( dim(run_tmp))
   if( test_len != dim(run_tmp)[1] ){
-    cat( " [[ The last line of the \"mcmc.txt\" is incomplete and will be removed ]] \n" )
+    cat( " [[ The last line of the \"mcmc.txt\" is incomplete and will be removed ]] \n\n" )
     run <- matrix( 0, nrow = c(dim( run_tmp )[1]-1), ncol = dim( run_tmp )[2] )
     run <- run_tmp[1:c(dim( run_tmp )[1]-1),]
   }else{
@@ -522,9 +522,9 @@ check_quantiles <- function( dat, threshold = 0.2, main_chain = 1, num_chains = 
     }
     
     # Informative message
-    cat( "\n>> If any conflicts have been found, you will find file",
-         paste( outdir, "check_chains.txt", sep = "" ), ".\n",
-         "Please open this file to check conflictive nodes if created.\n")
+    cat( "\n>> If any conflicts have been found, the following file should have been created:\n",
+         paste( outdir, "check_chains.txt", sep = "" ),"\n",
+         "If so, please open this file to check conflictive nodes.\n")
   }
   
 } 
@@ -743,7 +743,7 @@ read_calib_f <- function( main_dir, f_names, dat, head_avail = TRUE )
   
 }
 
-# Function to plot the user-specified prior VS the effective prior used by `MCMCtree`
+# Function to plot the calibration density VS the marginal density used by `MCMCtree`
 #
 # Parameters
 #
@@ -766,17 +766,14 @@ plot_check_calibnodes <- function( calibs, divt_list, dat, main_wd,
   if( ! dir.exists( paste( main_wd, "plots", sep = "" ) ) ){
     dir.create( paste( main_wd, "plots", sep = "" ) )
   }
-  if( ! dir.exists( paste( main_wd, "plots/effVSuser/", dat,  sep = "" ) ) ){
-    dir.create( paste( main_wd, "plots/effVSuser/", dat, sep = "" ) )
-  }
-  if( ! dir.exists( paste( main_wd, "plots/effVSuser/", dat, "/", out, sep = "" ) ) ){
-    dir.create( paste( main_wd, "plots/effVSuser/", dat, "/", out,  sep = "" ) )
+  if( ! dir.exists( paste( main_wd, "plots/calVSmarg/", dat,  sep = "" ) ) ){
+    dir.create( paste( main_wd, "plots/calVSmarg/", dat, sep = "" ) )
   }
   
   # In case users have not passed a string of length 3, just get the first three
   # letters
   tmp_dat_dir <- substr( x = dat, start = 1, stop = 3 )
-  png( filename = paste( main_wd, "plots/effVSuser/", dat, "/", out, "_",
+  png( filename = paste( main_wd, "plots/calVSmarg/", dat, "/", out, "_",
                          tmp_dat_dir, "_", clock,".jpg", sep = "" ),
          width = 1024, height = 768 )
   
@@ -891,7 +888,7 @@ plot_check_calibnodes <- function( calibs, divt_list, dat, main_wd,
       tmp_y   <- upperbounds( t = tmp_x, tU = tmp_max, pU = tmp_pU )
       tmp_labcab <- substr( x = calibs[i,1], start = 1, stop = 12 )
     }
-    # 2. Plot user-specified prior VS effective prior used by MCMCtree
+    # 2. Plot calibration density VS marginal density used by MCMCtree
     
     # 2.1. Find limit axis
     max_x_chain <- round( max( density( divt_list[[ 1 ]][,tmp_node] )$x ) + 0.5 )
@@ -927,17 +924,11 @@ plot_check_calibnodes <- function( calibs, divt_list, dat, main_wd,
     title( main = colnames( divt_list[[ 1 ]] )[tmp_node], 
            line = -2.7, sub = tmp_labcab, cex.main = 1.3, cex.sub = 0.7, adj = 0.9 )
     if ( ind == TRUE ){
-      if( ! dir.exists( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind", sep = "" ) ) ){
-        dir.create( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind", sep = "" ) )
+      if( ! dir.exists( paste( main_wd, "plots/calVSmarg/", dat, "/ind", sep = "" ) ) ){
+        dir.create( paste( main_wd, "plots/calVSmarg/", dat, "/ind", sep = "" ) )
       }
-      if( ! dir.exists( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind/", sep = "" ) ) ){
-        dir.create( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind/", sep = "" ) )
-      }
-      if( ! dir.exists( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind/", clock, sep = "" ) ) ){
-        dir.create( paste( main_wd, "plots/effVSuser/", dat, "/", out, "/ind/", clock, sep = "" ) )
-      }
-      png( filename = paste( main_wd, "plots/effVSuser/",  dat, "/", out, "/ind/", clock, "/CheckUSPvsEP_tn", 
-                             calibs[i,2], "_", clock, ".png", sep = "" ),
+      png( filename = paste( main_wd, "plots/calVSmarg/",  dat, "/ind/CheckUSPvsEP_tn", 
+                             calibs[i,2], "_", calibs[i,1], ".png", sep = "" ),
            width = 1024, height = 768 )
       
       plot( density( divt_list[[ 1 ]][,tmp_node], adj = 1 ),
@@ -962,7 +953,7 @@ plot_check_calibnodes <- function( calibs, divt_list, dat, main_wd,
       }
       title( main = colnames( divt_list[[ 1 ]] )[tmp_node], 
              line = -20, sub = tmp_labcab, cex.main = 3, cex.sub = 2, adj = 0.9 )
-      info.legend <- c( "User-specified prior", "Effective prior" )
+      info.legend <- c( "Calibration density", "Marginal density" )
       col.legend  <- c( "blue", "black" )
       legend( "topright", legend = info.legend, col = col.legend,
               lty = 1, bty = 'n', cex = 2 )
@@ -971,8 +962,8 @@ plot_check_calibnodes <- function( calibs, divt_list, dat, main_wd,
   }
   
   plot( x = 1, y = 1, col = "white", xaxt = "n", yaxt = "n", xlab = '', ylab = '' )
-  info.legend <- c( "User-specified prior",
-                    "Effective prior" )
+  info.legend <- c( "Calibration density",
+                    "Marginal density" )
   col.legend  <- c( "blue", "black" )
   #coords.plot <- locator()
   legend( "top", legend = info.legend, col = col.legend,
@@ -1257,14 +1248,18 @@ write_STmat <- function( ST_dists, out_path, out_file )
 # out_file_pdf   Character, name to be given to the convergence plot that will
 #                be generated. If filtering is required, "_FILT" will be 
 #                appended to the name given by the user.
-# out_title_pdf  Character, tilte to be used for the convergence plot that will
+# out_title_pdf  Character, title to be used for the convergence plot that will
 #                be generated. If filtering is required, "(FILT)" will be 
 #                appended to the title given by the user.
-# th             Numeric, threshold over which chains will be evaluated as "problematic".
+# th             Numeric, threshold over which chains will be evaluated as
+#                "problematic".
+# outchecks_dir  Character, path to the `plots` directory created at the
+#                beginning of the script. Same object name has been used to 
+#                avoid problems
 QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc, 
                      def_samples, prior = FALSE, out_dat, time_unit, 
                      out_file_pdf, out_title_pdf, 
-                     th ){
+                     th, outchecks_dir ){
   # 1. Obtain summarise object and generate first convergence plot
   cat( "\n[[ DATASET TO ANALYSE: ", dataset, " ]]\n[[ PATH:", path, " ]]\n" )
   cat( "\n    * * *    \n\n")
@@ -1280,12 +1275,13 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
                        out_dat = path,
                        time_unit = time_unit # time unit in Ma
   )
+  cat( "\n[[ RUNNING QC CHECKS ]]\n" )
   if( length( num_dirs ) == 1 ){
     num_chains   <- num_dirs
   }else{
     num_chains   <- length( num_dirs )
   }
-  cat( ">> There are a total of ", num_chains, "chains\n" )
+  cat( ">> There are a total of", num_chains, "chains\n" )
   half_chains <- trunc( num_chains/2 )
   if( half_chains == 1 ){
     post_half1 <- obj_sum$mean[1,]
@@ -1298,6 +1294,16 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
   }else{
     post_half2  <- apply( X = obj_sum$mean[(half_chains+1):num_chains,],
                           MARGIN = 2, FUN = mean )
+  }
+  # Create directory in case users have forgotten to run the script
+  # from the beginning or deleted the `plots` directory accidentally
+  if( ! dir.exists( outchecks_dir ) ){
+    dir.create( outchecks_dir )
+  }
+  if( ! dir.exists( paste( outchecks_dir, "ESS_and_chains_convergence/",
+                           sep = "" ) ) ){
+    dir.create( paste( outchecks_dir, "ESS_and_chains_convergence/",
+                       sep = "" ) )
   }
   pdf( paste( outchecks_dir,
               "ESS_and_chains_convergence/", out_file_pdf, ".pdf",
@@ -1338,6 +1344,7 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
   #> to be kept or deleted from your analysis.
   #> 
   #> 1. Set threshold and run preliminary comparison anlaysis across MCMC runs
+  cat( ">> Threshold value to run QC on quantiles: th =", th, "\n\n" )
   th <- th
   sum_quantiles <- check_quantiles( dat = obj_sum, threshold = th,
                                     num_chains = num_chains, compare_all = TRUE )
@@ -1358,7 +1365,7 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
   #>
   #> 2. Chech if there are chains to be deleted
   if( file.exists( paste( path, "check_chains.txt", sep = "" ) ) ){
-    cat( "\n[[ SOME CHAINS HAVE NOT PASSED QC CONTROL ]]\n")
+    cat( "\n>> WARNING: some chains have not passed QC checks\n")
     # Get filtered summary object and generate convergence plots with filtered
     # dataset
     chains_f  <- readLines( paste( path, "check_chains.txt", sep = "" ) )
@@ -1367,11 +1374,20 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
                                            replacement = "" ,
                                            x = chains_f[ind_lines] ) ) )
     filt_chains <- setdiff( c( 1:num_chains ), rm_chains )
-    cat( "Chains kept: ", filt_chains, "\nChains removed: ", rm_chains, "\n" )
-    cat( "\n>> Summarising now only filtered chains!\n\n" )
+    cat( ">> Chains kept: ", filt_chains,
+         "\n>> Chains removed: ", rm_chains, "\n" )
+    cat( "\n>> Summarising only filtered chains now!\n\n" )
     write.table( x = t( filt_chains ),
                  file = paste( path, "chains_kept.txt", sep = "" ),
                  quote = FALSE, row.names = FALSE, col.names = FALSE )
+    # Abort if only one chain has passed the filters
+    if( length( filt_chains ) == 1 ){
+      stop( "You need to increase the threshold value for this\n",
+            "filtering step to continue. You may have very divergent\n",
+            "sequences, too few age constraints, or other technical\n",
+            "problems may have occurred during the MCMC\n\n",
+            "Current threshold value: ", th, "\n" )
+    }
     post_FILT_sum <- sum_MCMC( num_dirs = filt_chains, delcol = delcol,
                                data_dir = path,
                                num_divt = num_divt, node_calib = node_calib,
@@ -1386,7 +1402,14 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
     )
     # Convergence plot
     half_chains <- trunc( length(filt_chains)/2 )
-    if( half_chains == 1 ){
+    if( half_chains == 0 ){
+      # Double check
+      stop( "You need to increase the threshold value for this\n",
+            "filtering step to continue. You may have very divergent\n",
+            "sequences, too few age constraints, or other technical\n",
+            "problems may have occurred during the MCMC\n\n",
+            "Current threshold value: ", th, "\n" )
+    }else if( half_chains == 1 ){
       post_half1  <- post_FILT_sum$mean[1,]
     }else{
       post_half1  <- apply( X = post_FILT_sum$mean[1:half_chains,],
@@ -1475,7 +1498,8 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
                  quote = FALSE, row.names = TRUE, col.names = c( "Rhat" ) )
   }
   
-  cat( "\n[[ RETURNING OBJECTS, END OF TASKS ]]\n\n")
+  cat( "\n[[ RETURNING OBJECTS, END OF TASKS ]]\n")
+  cat( "\n    * * *    \n\n")
   # Return objects!
   if( min( ESS$stats$Rhat ) > 1.05 | max( ESS$stats$Rhat ) > 1.05 ){
     return( list( obj_sum = obj_sum, ESS_obj = ESS, 
@@ -1488,3 +1512,205 @@ QC_conv <- function( num_dirs, delcol, path, num_divt, node_calib, dataset, perc
   }
   
 }
+
+# Function to incorporate node age constraints following PAML notation
+#
+# Arguments:
+#
+# tt            Phylo, object with the tree, previously generated
+# calibrations  Matrix, element of the list generated with the calibration
+#               info. E.g., `all_calibs[[1]]`
+# out_name      Character, name of the dataset analysed
+# out_dir_raw   Character, abs/rel path to the output directory for raw
+#               trees
+# out_dir_inp   Character, abs/rel path to th eoutput directory for inp data
+#
+add_node_const <- function( tt, calibrations, out_name, out_dir_raw, out_dir_inp )
+{
+  # Print message regarding the data
+  cat( "\n\n* * *\nCalibrated tree to be generated: ", out_name, "\n* * *\n" )
+  
+  #-------------------------------#
+  # PART 1: GENERAT TEMPLATE FILE #
+  #-------------------------------#
+  # Generate empty vector
+  keep_indexes <- matrix( 0, nrow = length(rownames(calibrations)), ncol = 3 )
+  # Generate empty vector with as many entries as nodes in the tree
+  tt$node.label <- rep( NA, tt$Nnode )
+  for( i in 1:length(rownames(calibrations)) ){
+    ## Build MCMCtree calib
+    ind_nas  <- which( calibrations[i,] == "" )
+    if( c(8,9,10) %in% ind_nas && length( ind_nas ) == 1 ){ # if B calib
+      node_lab <- paste( "'B(", calibrations[i,4], ",",
+                         calibrations[i,6], ",", calibrations[i,5],
+                         ",", calibrations[i,7], ")'", sep = "" )
+    }else if( length( ind_nas ) == 3 ){ # col8 + two cols for U or L
+      # if lower bounds missing, then it is an upper bound calib
+      if( 4 %in% ind_nas || 5 %in% ind_nas ){
+        node_lab <- paste( "'U(", calibrations[i,6], ",",
+                           calibrations[i,7], ")'", sep = "" )
+      } # if upper bounds missing, then it is a lower bound calib
+      else if( 6 %in% ind_nas || 7 %in% ind_nas ){
+        node_lab <- paste( "'L(", calibrations[i,4], ",",
+                           calibrations[i,5], ")'", sep = "" )
+      }
+      else{
+        node_lab <- ""
+      }
+    }else{
+      # For inequality calibrations that start with '#[0-9]' or for other MCMCtree cals
+      # Only column 8 is allowed
+      node_lab <- calibrations[i,8]
+    }
+    
+    # Get MRCA for these two tips
+    mrca <- ape::getMRCA( phy = tt, tip = c( calibrations[i,2],
+                                             calibrations[i,3]) )
+    keep_indexes[i,1] <- mrca-ape::Ntip(tt)
+    keep_indexes[i,2] <- calibrations[i,1]
+    keep_indexes[i,3] <- paste( calibrations[i,2], "-", calibrations[i,3], "-",
+                                node_lab, sep = "" )
+    
+    cat( "Node label with calibration: ", mrca-ape::Ntip(tt), "\n" )
+    # Replace node label accordingly
+    tt$node.label[mrca-ape::Ntip(tt)] <- paste0( "[", calibrations[i,1],
+                                                 "]", collapse = "" )
+    ## While here, I will not use `tt_cals` as the format is wrong
+    ## once the tree is written out in the next lines outside the `loop`
+    #tt_cals$node.label[mrca-ape::Ntip(tt)] <- node_lab
+  }
+  ## Find duplicates
+  ind_dup   <- which( duplicated(keep_indexes[,1]) == TRUE )
+  nodes_dup <- which( keep_indexes[,1] %in% as.numeric( keep_indexes[ind_dup,1] ) )
+  #keep_indexes[nodes_dup,]
+  if( length( nodes_dup ) > 0 ){
+    stop( "There are duplicated nodes, you need to check!" )
+  }
+  # Remove "NA" from the labs
+  ind_na_bools <- is.na( x = tt$node.label )
+  ind_na       <- which( ind_na_bools == TRUE )
+  tt$node.label[ind_na] <- ""
+  # Write PHYLIP header, then the calibrated tree
+  writeLines( text = paste( length(tt$tip.label), " 1", sep = "" ), 
+              con = paste( out_dir_raw, "cals_only_", out_name, ".tree",
+                           sep = "" ) )
+  ape::write.tree( phy = tt,
+                   file = paste( out_dir_raw, "cals_only_", out_name, ".tree",
+                                 sep = "" ),
+                   append = TRUE )
+  
+  #-----------------------------------------#
+  # PART 2: READ TREE AND CALIBRATIONS FILE #
+  #-----------------------------------------#
+  # Read tree and get phylip header
+  # NOTE: Make always sure that there is at least one blank line at the 
+  # end of the tree file! Otherwise, you will get an error telling you that 
+  # there is an incomplete final line in these files.
+  tt_name       <- paste( out_dir_raw, "cals_only_", out_name, ".tree",
+                          sep = "" )
+  tt            <- readLines( tt_name )
+  phylip.header <- tt[1]
+  tt            <- tt2 <- tt3 <- tt[2]
+  
+  #----------------------------------------#
+  # PART 3: REPLACE TAGS WITH CALIBRATIONS #
+  #----------------------------------------#
+  # Replace calibration names with corresponding calibration
+  for( j in 1:length(rownames(calibrations)) ){
+    # Build MCMCtree calib that will be replaced
+    ind_nas  <- which( calibrations[j,4:7] == "" )
+    if( length( ind_nas ) == 0 ){ # For soft bounds when cols 4-7 are given...
+      node_lab <- paste( "B(", calibrations[j,4], ",",
+                         calibrations[j,6], ",", calibrations[j,5], 
+                         ",", calibrations[j,7], ")", sep = "" )
+    }else if ( length( ind_nas ) == 4 ){ # If only MCMCtree is given in col8...
+      node_lab <- calibrations[j,8]
+    }else{ # For lower/upper bounds when cols 4-5 or 6-7 are given...
+      # NOTES: 1 = minage | 2 = mintail | 3 = maxage | 4 = maxtal
+      # If upper bound because NAs are in 1 and 2...
+      if( 1 %in% ind_nas || 2 %in% ind_nas ){
+        node_lab <- paste( "U(", calibrations[j,6], ",",
+                           calibrations[j,7], ")", sep = "" )
+      } # If lower bound because NAs are in 3 and 4...
+      else if( 3 %in% ind_nas || 4 %in% ind_nas ){
+        node_lab <- paste( "L(", calibrations[j,4], ",", 
+                           calibrations[j,5], ")", sep = "" )
+      }
+      else{
+        node_lab <- ""
+      }
+    }
+    # Now, `nodel_lab` will have the calibration in `MCMCtree` format already
+    # ready to replace the corresponding flag generated in the previous step
+    # for each calibrated node
+    #
+    # Conditional is used so that the single quotation marks are only kept 
+    # in the upper-bound calibration for the root. Inequality calibrations
+    # do not require single quotation marks
+    tmp_calib <- gsub( x = node_lab, pattern = "\\(..*",
+                       replacement = "" )
+    tmp_calib <- gsub( x = tmp_calib, pattern = "[0-9]..*",
+                       replacement = "" )
+    if( tmp_calib == 'B' || tmp_calib == 'U' || tmp_calib == 'L' || tmp_calib == 'ST' ){
+      tt <- gsub( pattern = paste0("\\[",calibrations[j,1],"\\]"),
+                  x = tt,
+                  replacement = paste( "'", node_lab, "'", sep = "" ) )
+    }else{ # For cross-braced nodes
+      tt <- gsub( pattern = paste0("\\[",calibrations[j,1],"\\]"),
+                  x = tt,
+                  replacement = paste( node_lab, sep = "" ) )
+    }
+    # Copy to visualise in FigTree
+    reps <- gsub( x = gsub( x = gsub( x = gsub( x = gsub( x = node_lab,
+                                                          pattern = "\\{",
+                                                          replacement = "(" ),
+                                                pattern = "\\}",
+                                                replacement = ")" ), 
+                                      pattern = "\\[|\\]", replacement = "" ),
+                            pattern = "\\#", replacement = "flag" ),
+                  pattern = " ", replacement = "-" )
+    # For cross-braced calibrations without fossil
+    if( tmp_calib == '#' ){
+      reps <- gsub( x = gsub( x = reps, pattern = "\\#", replacement = "flag" ),
+                    pattern = "\\]", replacement = "" )
+      tt2 <- gsub( pattern = paste0("\\[",calibrations[j,1],"\\]"),
+                   x = tt2,
+                   replacement = paste0( "'", reps, "-", calibrations[j,1], "'", 
+                                         collapse = "" ) )
+    }else{ # For the rest of calibrations
+      tt2 <- gsub( pattern = paste0("\\[",calibrations[j,1],"\\]"),
+                   x = tt2,
+                   replacement = paste0( "'", reps, "-", calibrations[j,1], "'",
+                                         collapse = "" ) )
+    }
+    # Generate an uncalibrated tree for CODEML!
+    tt3 <- gsub( pattern = paste0("\\[",calibrations[j,1],"\\]"),
+                 x = tt3,
+                 replacement = "" )
+  }
+  
+  #---------------------------------------#
+  # PART 4: WRITE CALIBRATED TREE IN FILE #
+  #---------------------------------------#
+  out_dir <- out_dir_inp
+  if( ! dir.exists( out_dir_inp ) ){
+    dir.create( out_dir_inp )
+  }
+  write( x = phylip.header, file = paste( out_dir, out_name, "_calib_MCMCtree.tree", sep = "" ) )
+  write( x = tt, file = paste( out_dir, out_name, "_calib_MCMCtree.tree", sep = "" ),
+         append = TRUE )
+  write( x = phylip.header, file = paste( out_dir_raw, out_name,
+                                          "_fordisplay_calib_MCMCtree.tree",
+                                          sep = "" ) )
+  write( x = tt2, file = paste( out_dir_raw, out_name,
+                                "_fordisplay_calib_MCMCtree.tree", sep = "" ),
+         append = TRUE )
+  # write( x = phylip.header, file = paste( out_dir, out_name, "_uncalib.tree", sep = "" ) )
+  # write( x = tt3, file = paste( out_dir, out_name, "_uncalib.tree", sep = "" ),
+  #        append = TRUE )
+  
+  # Return objects
+  return( list( tt_calib=tt, keep_indexes=keep_indexes ) )
+}
+
+

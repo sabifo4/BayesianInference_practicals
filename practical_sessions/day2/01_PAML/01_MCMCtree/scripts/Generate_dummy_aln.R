@@ -12,21 +12,12 @@ path_to_file <- getActiveDocumentContext()$path
 script_wd <- paste( dirname( path_to_file ), "/", sep = "" )
 wd <- gsub( pattern = "/scripts", replacement = "", x = script_wd )
 setwd( wd )
-# If you have had problems to install the `rstudioapi` package,
-# you can find the path to the directory where this script by right clicking
-# the name of this script file and selecting "Copy Path". Replace <path> below
-# with the path that you have copied (remember to remove the name of the 
-# R script from the path, but keep the last "/"!), uncomment the lines below,
-# and run the command!
-#
-# script_wd <- c('<path>')
-# wd <- gsub( pattern = "/scripts", replacement = "", x = script_wd )
-# setwd( wd )
 
 #--------------#
 # LOAD OBJECTS #
 #--------------#
-tt <- ape::read.tree( file = "../../00_data_formatting/01_inp_data/tree_uncalib.tree" )
+# Get tree topology so that we can get the taxa names
+tt <- ape::read.tree( file = "../../00_data_formatting/01_inp_data/tree_example_uncalib.tree" )
 
 #-------#
 # TASKS #
@@ -37,13 +28,13 @@ spnames       <- tt$tip.label
 phylip_header <- paste( num_sp, "  1", sep = "" )
 
 phylip_header_aln <- paste( num_sp, "  2\n", sep = "" )
-spnames_2nuc      <- paste( spnames, "     AT", sep = "" )
+spnames_2chars      <- paste( spnames, "     AT", sep = "" ) # Change this if you have AA!
 
 # 2. Generate dummy aln
 if( ! dir.exists( "dummy_aln/" ) ){
   dir.create( "dummy_aln/" )
 }
 write( x = phylip_header_aln, file = paste( "dummy_aln/dummy_aln.aln", sep = "" ) )
-write( x = spnames_2nuc, file = paste( "dummy_aln/dummy_aln.aln", sep = "" ),
+write( x = spnames_2chars, file = paste( "dummy_aln/dummy_aln.aln", sep = "" ),
        append = TRUE )
 
