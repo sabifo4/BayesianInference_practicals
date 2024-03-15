@@ -1,20 +1,26 @@
-tmp
-practical_sessions/day2/00_BEAST/examples
-practical_sessions/day2/01_MCMCtree/examples
+# Do not sync files that are generated as part of the tutorial
+## Day 1
 practical_sessions/day1/01_MrBayes/analysis/conifer*
 practical_sessions/day1/01_MrBayes/analysis/ctl_mrbayes.nex
-# data formatting
-practical_sessions/day2/main
+## Day 2
+practical_sessions/day2/.vscode
+### Data formatting
+practical_sessions/day2/00_data_formatting/00_raw_data/alignment/log_lenseq.txt
+practical_sessions/day2/00_data_formatting/00_raw_data/alignment/raw_aln.fasta
+practical_sessions/day2/00_data_formatting/00_raw_data/trees/example_fordisplay_calib_MCMCtree.tree
+practical_sessions/day2/00_data_formatting/00_raw_data/trees/cals_only_example.tree
 practical_sessions/day2/00_data_formatting/01_inp_data
-practical_sessions/day2/00_data_formatting/00_raw_data/log_lenseq.txt
-# BASEML
-practical_sessions/day2/01_PAML/00_Hessian/out_RData
-# MCMCtree
+### PAML-BASEML
+practical_sessions/day2/01_PAML/00_BASEML/out_RData
+### PAML-MCMCtree
 practical_sessions/day2/01_PAML/01_MCMCtree/dummy_aln
+practical_sessions/day2/01_PAML/01_MCMCtree/calib_files
 practical_sessions/day2/01_PAML/01_MCMCtree/out_RData
 practical_sessions/day2/01_PAML/01_MCMCtree/plots
-practical_sessions/day2/01_PAML/01_MCMCtree/sum*
-practical_sessions/day2/01_PAML/01_MCMCtree/scripts/old
-practical_sessions/day2/src/fasta-phylip-partitions
+practical_sessions/day2/01_PAML/01_MCMCtree/sum_*
+### Main `example_dating` directory (local PC)
+practical_sessions/day2/example_dating
+## TMP folder
+tmp
 
 
